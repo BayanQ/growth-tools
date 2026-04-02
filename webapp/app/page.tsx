@@ -61,13 +61,13 @@ function ProgressBar({ current, total }: { current: number; total: number }) {
   const pct = Math.round((current / total) * 100);
   return (
     <div className="mb-8">
-      <div className="flex items-center justify-between text-sm text-gray-500 mb-2">
+      <div className="flex items-center justify-between text-sm text-brand-muted mb-2">
         <span>Question {current} of {total}</span>
         <span>{pct}% complete</span>
       </div>
-      <div className="h-2 w-full rounded-full bg-gray-200">
+      <div className="h-1.5 w-full rounded-full bg-brand-border">
         <div
-          className="h-2 rounded-full bg-green-500 transition-all duration-300"
+          className="h-1.5 rounded-full bg-brand-accent transition-all duration-300"
           style={{ width: `${pct}%` }}
         />
       </div>
@@ -79,38 +79,38 @@ function ProgressBar({ current, total }: { current: number; total: number }) {
 
 function Landing({ onStart, onSampleReport }: { onStart: () => void; onSampleReport: () => void }) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white flex flex-col">
+    <div className="min-h-screen bg-brand-bg text-brand-text flex flex-col">
       <nav className="px-6 py-5 max-w-5xl mx-auto w-full flex items-center justify-between">
-        <span className="text-green-400 font-bold text-lg tracking-tight">Growth Engine</span>
+        <span className="text-brand-accent font-bold text-lg tracking-tight">GrowthSpan</span>
         <button
           onClick={onStart}
-          className="text-sm font-medium text-gray-300 hover:text-white transition-colors"
+          className="text-sm font-medium text-brand-muted hover:text-brand-text transition-colors"
         >
           Start Diagnostic →
         </button>
       </nav>
 
-      <main className="flex-1 flex flex-col items-center justify-center px-6 py-20 text-center max-w-3xl mx-auto w-full">
-        <div className="inline-flex items-center rounded-full border border-green-500/30 bg-green-500/10 px-4 py-1.5 text-sm font-medium text-green-400 mb-8">
+      <main className="flex-1 flex flex-col items-center justify-center px-6 py-16 text-center max-w-3xl mx-auto w-full">
+        <div className="inline-flex items-center rounded-full border border-brand-accent/30 bg-brand-accent/10 px-4 py-1.5 text-sm font-medium text-brand-accent mb-8">
           Free Operator Diagnostic
         </div>
 
-        <h1 className="text-5xl md:text-6xl font-bold tracking-tight mb-6 leading-tight">
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-6 leading-[1.1]">
           Growth Engine
           <br />
-          <span className="text-green-400">Diagnostic</span>
+          <span className="text-brand-accent">Diagnostic</span>
         </h1>
 
-        <p className="text-xl text-gray-300 mb-4 max-w-xl">
+        <p className="text-lg sm:text-xl text-brand-muted mb-4 max-w-xl">
           Find the growth traps slowing your business — and the systems you need to build first.
         </p>
 
-        <p className="text-sm text-gray-500 mb-12 max-w-lg">
+        <p className="text-sm text-brand-subtle mb-12 max-w-lg leading-relaxed">
           Growth problems are usually system problems. More leads, hires, or spend don't fix a weak engine.
           This tool helps you find the constraint before you add more fuel.
         </p>
 
-        <div className="flex flex-col sm:flex-row gap-4 justify-center w-full max-w-sm mx-auto">
+        <div className="flex flex-col sm:flex-row gap-3 justify-center w-full max-w-xs sm:max-w-sm mx-auto">
           <button
             onClick={onStart}
             className="btn-primary text-base w-full sm:w-auto"
@@ -125,23 +125,23 @@ function Landing({ onStart, onSampleReport }: { onStart: () => void; onSampleRep
           </button>
         </div>
 
-        <div className="mt-16 grid grid-cols-3 gap-8 max-w-lg mx-auto text-center">
+        <div className="mt-16 grid grid-cols-3 gap-6 max-w-sm mx-auto text-center border-t border-brand-border pt-10">
           <div>
-            <div className="text-2xl font-bold text-white">24</div>
-            <div className="text-xs text-gray-400 mt-1">Questions</div>
+            <div className="text-2xl font-bold text-brand-text">24</div>
+            <div className="text-xs text-brand-subtle mt-1">Questions</div>
           </div>
           <div>
-            <div className="text-2xl font-bold text-white">6–8 min</div>
-            <div className="text-xs text-gray-400 mt-1">Completion time</div>
+            <div className="text-2xl font-bold text-brand-text">6–8 min</div>
+            <div className="text-xs text-brand-subtle mt-1">Completion time</div>
           </div>
           <div>
-            <div className="text-2xl font-bold text-white">Free</div>
-            <div className="text-xs text-gray-400 mt-1">No signup needed</div>
+            <div className="text-2xl font-bold text-brand-text">Free</div>
+            <div className="text-xs text-brand-subtle mt-1">No signup needed</div>
           </div>
         </div>
       </main>
 
-      <footer className="px-6 py-6 text-center text-xs text-gray-600 max-w-5xl mx-auto w-full">
+      <footer className="px-6 py-6 text-center text-xs text-brand-subtle max-w-5xl mx-auto w-full">
         No personal information required to complete the diagnostic. Lead capture is optional, for your PDF report only.
       </footer>
     </div>
@@ -166,37 +166,33 @@ function IntakeForm({ onSubmit }: { onSubmit: (data: IntakeData) => void }) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      <header className="bg-white border-b border-gray-100 px-6 py-4">
+    <div className="min-h-screen bg-brand-bg flex flex-col">
+      <header className="bg-brand-surface border-b border-brand-border px-6 py-4">
         <div className="max-w-2xl mx-auto flex items-center gap-2">
-          <span className="text-green-600 font-bold">Growth Engine</span>
-          <span className="text-gray-300">›</span>
-          <span className="text-gray-500 text-sm">Context</span>
+          <span className="text-brand-accent font-bold">GrowthSpan</span>
+          <span className="text-brand-subtle">›</span>
+          <span className="text-brand-muted text-sm">Context</span>
         </div>
       </header>
 
       <main className="flex-1 px-6 py-10 max-w-2xl mx-auto w-full">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">A bit of context first</h2>
-        <p className="text-gray-500 mb-8 text-sm">
+        <h2 className="text-2xl font-bold text-brand-text mb-2">A bit of context first</h2>
+        <p className="text-brand-muted mb-8 text-sm">
           No personal information. These inputs calibrate your results — the more accurate, the more useful.
         </p>
 
         <div className="space-y-8">
           {/* Revenue Range */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-3">
-              Annual revenue range <span className="text-red-500">*</span>
+            <label className="block text-sm font-semibold text-brand-text mb-3">
+              Annual revenue range <span className="text-red-400">*</span>
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {['Under $1M', '$1M – $3M', '$3M – $10M', '$10M – $25M', '$25M – $50M', '$50M – $100M', '$100M+'].map((opt) => (
                 <button
                   key={opt}
                   onClick={() => set('revenueRange', opt)}
-                  className={`rounded-lg border px-3 py-2.5 text-sm font-medium transition-all text-left ${
-                    form.revenueRange === opt
-                      ? 'border-green-600 bg-green-50 text-green-700'
-                      : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
-                  }`}
+                  className={`option-btn ${form.revenueRange === opt ? 'option-btn-active' : ''}`}
                 >
                   {opt}
                 </button>
@@ -206,19 +202,15 @@ function IntakeForm({ onSubmit }: { onSubmit: (data: IntakeData) => void }) {
 
           {/* Employee Range */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-3">
-              Team size <span className="text-red-500">*</span>
+            <label className="block text-sm font-semibold text-brand-text mb-3">
+              Team size <span className="text-red-400">*</span>
             </label>
             <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
               {['1–5', '6–10', '11–25', '26–50', '51–100', '101–200', '201–300', '300+'].map((opt) => (
                 <button
                   key={opt}
                   onClick={() => set('employeeRange', opt)}
-                  className={`rounded-lg border px-3 py-2.5 text-sm font-medium transition-all text-center ${
-                    form.employeeRange === opt
-                      ? 'border-green-600 bg-green-50 text-green-700'
-                      : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
-                  }`}
+                  className={`option-btn text-center ${form.employeeRange === opt ? 'option-btn-active' : ''}`}
                 >
                   {opt}
                 </button>
@@ -228,8 +220,8 @@ function IntakeForm({ onSubmit }: { onSubmit: (data: IntakeData) => void }) {
 
           {/* Business Model */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-3">
-              Business model <span className="text-red-500">*</span>
+            <label className="block text-sm font-semibold text-brand-text mb-3">
+              Business model <span className="text-red-400">*</span>
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {[
@@ -246,11 +238,7 @@ function IntakeForm({ onSubmit }: { onSubmit: (data: IntakeData) => void }) {
                 <button
                   key={opt}
                   onClick={() => set('businessModel', opt)}
-                  className={`rounded-lg border px-3 py-2.5 text-sm font-medium transition-all text-left ${
-                    form.businessModel === opt
-                      ? 'border-green-600 bg-green-50 text-green-700'
-                      : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
-                  }`}
+                  className={`option-btn ${form.businessModel === opt ? 'option-btn-active' : ''}`}
                 >
                   {opt}
                 </button>
@@ -260,10 +248,10 @@ function IntakeForm({ onSubmit }: { onSubmit: (data: IntakeData) => void }) {
 
           {/* Growth Goal (optional) */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
-              Primary growth goal <span className="text-gray-400 font-normal">(optional)</span>
+            <label className="block text-sm font-semibold text-brand-text mb-1">
+              Primary growth goal <span className="text-brand-subtle font-normal">(optional)</span>
             </label>
-            <p className="text-xs text-gray-400 mb-3">Skip if none apply strongly right now.</p>
+            <p className="text-xs text-brand-subtle mb-3">Skip if none apply strongly right now.</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {[
                 'Increase new customer acquisition',
@@ -276,11 +264,7 @@ function IntakeForm({ onSubmit }: { onSubmit: (data: IntakeData) => void }) {
                 <button
                   key={opt}
                   onClick={() => set('growthGoal', form.growthGoal === opt ? '' : opt)}
-                  className={`rounded-lg border px-3 py-2.5 text-sm font-medium transition-all text-left ${
-                    form.growthGoal === opt
-                      ? 'border-green-600 bg-green-50 text-green-700'
-                      : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
-                  }`}
+                  className={`option-btn ${form.growthGoal === opt ? 'option-btn-active' : ''}`}
                 >
                   {opt}
                 </button>
@@ -290,8 +274,8 @@ function IntakeForm({ onSubmit }: { onSubmit: (data: IntakeData) => void }) {
 
           {/* Leadership Structure (optional) */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
-              Leadership structure <span className="text-gray-400 font-normal">(optional)</span>
+            <label className="block text-sm font-semibold text-brand-text mb-1">
+              Leadership structure <span className="text-brand-subtle font-normal">(optional)</span>
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {[
@@ -302,11 +286,7 @@ function IntakeForm({ onSubmit }: { onSubmit: (data: IntakeData) => void }) {
                 <button
                   key={opt}
                   onClick={() => set('leadershipStructure', form.leadershipStructure === opt ? '' : opt)}
-                  className={`rounded-lg border px-3 py-2.5 text-sm font-medium transition-all text-left ${
-                    form.leadershipStructure === opt
-                      ? 'border-green-600 bg-green-50 text-green-700'
-                      : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
-                  }`}
+                  className={`option-btn ${form.leadershipStructure === opt ? 'option-btn-active' : ''}`}
                 >
                   {opt}
                 </button>
@@ -324,7 +304,7 @@ function IntakeForm({ onSubmit }: { onSubmit: (data: IntakeData) => void }) {
             Start Diagnostic →
           </button>
           {!isValid && (
-            <p className="text-xs text-gray-400 mt-2">
+            <p className="text-xs text-brand-subtle mt-2">
               Please select revenue range, team size, and business model to continue.
             </p>
           )}
@@ -373,15 +353,15 @@ function QuestionFlow({
   const scaleLabels = ['Strongly disagree', 'Disagree', 'Neutral / mixed', 'Agree', 'Strongly agree'];
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      <header className="bg-white border-b border-gray-100 px-6 py-4">
+    <div className="min-h-screen bg-brand-bg flex flex-col">
+      <header className="bg-brand-surface border-b border-brand-border px-6 py-4">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-green-600 font-bold">Growth Engine</span>
-            <span className="text-gray-300">›</span>
-            <span className="text-gray-500 text-sm">Diagnostic</span>
+            <span className="text-brand-accent font-bold">GrowthSpan</span>
+            <span className="text-brand-subtle">›</span>
+            <span className="text-brand-muted text-sm">Diagnostic</span>
           </div>
-          <span className="text-xs text-gray-400">{answeredCount}/{total} answered</span>
+          <span className="text-xs text-brand-subtle">{answeredCount}/{total} answered</span>
         </div>
       </header>
 
@@ -390,20 +370,20 @@ function QuestionFlow({
 
         {/* Section label */}
         <div className="mb-6">
-          <span className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-600 uppercase tracking-wide">
+          <span className="inline-flex items-center rounded-full border border-brand-border bg-brand-surface px-3 py-1 text-xs font-semibold text-brand-muted uppercase tracking-wide">
             Section {SECTIONS_ORDER.indexOf(currentSection) + 1} of {SECTIONS_ORDER.length} — {sectionLabel}
           </span>
         </div>
 
         {/* Question */}
         <div className="card flex-1 flex flex-col">
-          <p className="text-lg font-semibold text-gray-900 leading-relaxed mb-8">
+          <p className="text-lg font-semibold text-brand-text leading-relaxed mb-8">
             {question.text}
           </p>
 
           {/* Scale */}
           <div className="space-y-3 mb-8">
-            <div className="flex justify-between text-xs text-gray-400 px-1 mb-1">
+            <div className="flex justify-between text-xs text-brand-subtle px-1 mb-1">
               <span>Strongly disagree</span>
               <span>Strongly agree</span>
             </div>
@@ -422,18 +402,18 @@ function QuestionFlow({
               ))}
             </div>
             {currentAnswer && (
-              <p className="text-center text-sm text-gray-500 mt-1">
+              <p className="text-center text-sm text-brand-muted mt-1">
                 {scaleLabels[currentAnswer - 1]}
               </p>
             )}
           </div>
 
           {/* Navigation */}
-          <div className="flex justify-between items-center mt-auto pt-4 border-t border-gray-100">
+          <div className="flex justify-between items-center mt-auto pt-4 border-t border-brand-border">
             <button
               onClick={handlePrev}
               disabled={currentIndex === 0}
-              className="text-sm text-gray-500 hover:text-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="text-sm text-brand-muted hover:text-brand-text disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
             >
               ← Previous
             </button>
@@ -460,10 +440,10 @@ function QuestionFlow({
                 key={sec}
                 className={`h-1.5 rounded-full transition-all ${
                   isActive
-                    ? 'w-8 bg-green-500'
+                    ? 'w-8 bg-brand-accent'
                     : isComplete
-                    ? 'w-4 bg-green-300'
-                    : 'w-4 bg-gray-200'
+                    ? 'w-4 bg-brand-accent/40'
+                    : 'w-4 bg-brand-border'
                 }`}
                 title={SECTION_NAMES[sec]}
               />
@@ -479,10 +459,10 @@ function QuestionFlow({
 
 function LoadingScreen() {
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center text-center px-6">
-      <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-green-600 mb-6" />
-      <h2 className="text-xl font-bold text-gray-900 mb-2">Analyzing your responses...</h2>
-      <p className="text-gray-500 text-sm max-w-xs">
+    <div className="min-h-screen bg-brand-bg flex flex-col items-center justify-center text-center px-6">
+      <div className="animate-spin rounded-full h-12 w-12 border-4 border-brand-border border-t-brand-accent mb-6" />
+      <h2 className="text-xl font-bold text-brand-text mb-2">Analyzing your responses...</h2>
+      <p className="text-brand-muted text-sm max-w-xs">
         Scoring your growth engine, identifying traps, and mapping your constraint.
       </p>
     </div>
@@ -521,13 +501,13 @@ function ResultsPage({
   const actions = THIRTY_DAY_ACTIONS[recommended_system];
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
-      <header className="bg-white border-b border-gray-100 px-6 py-4 sticky top-0 z-10">
+    <div className="min-h-screen bg-brand-bg pb-20">
+      <header className="bg-brand-surface border-b border-brand-border px-6 py-4 sticky top-0 z-10">
         <div className="max-w-3xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-green-600 font-bold">Growth Engine</span>
-            <span className="text-gray-300">›</span>
-            <span className="text-gray-500 text-sm">Your Results</span>
+            <span className="text-brand-accent font-bold">GrowthSpan</span>
+            <span className="text-brand-subtle">›</span>
+            <span className="text-brand-muted text-sm">Your Results</span>
           </div>
           {leadSubmitted ? (
             <a
@@ -559,19 +539,19 @@ function ResultsPage({
         </div>
       </header>
 
-      <main className="max-w-3xl mx-auto px-6 py-10 space-y-8">
+      <main className="max-w-3xl mx-auto px-6 py-10 space-y-6">
         {/* Archetype + Summary */}
-        <div className="card border-green-200 bg-green-50">
+        <div className="card border-brand-accent/30" style={{ backgroundColor: '#1a2200' }}>
           <div className="flex items-start gap-4">
             <div className="flex-1">
-              <p className="text-xs font-semibold text-green-600 uppercase tracking-wide mb-1">
+              <p className="text-xs font-semibold text-brand-accent uppercase tracking-wide mb-1">
                 Your Growth Profile
               </p>
-              <h2 className="text-2xl font-bold text-gray-900 mb-3">{archetypeName}</h2>
+              <h2 className="text-2xl font-bold text-brand-text mb-3">{archetypeName}</h2>
               <p
-                className="text-gray-700 leading-relaxed"
+                className="text-brand-muted leading-relaxed"
                 dangerouslySetInnerHTML={{
-                  __html: summary.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>'),
+                  __html: summary.replace(/\*\*(.+?)\*\*/g, '<strong class="text-brand-text">$1</strong>'),
                 }}
               />
             </div>
@@ -580,12 +560,12 @@ function ResultsPage({
 
         {/* Over-fueling warning */}
         {warning && (
-          <div className="card border-amber-200 bg-amber-50">
+          <div className="card border-yellow-500/30 bg-yellow-500/5">
             <div className="flex gap-3">
-              <span className="text-amber-500 text-lg">⚠</span>
+              <span className="text-yellow-400 text-lg">⚠</span>
               <div>
-                <p className="text-sm font-semibold text-amber-800 mb-1">Over-fueling warning</p>
-                <p className="text-sm text-amber-700">{warning}</p>
+                <p className="text-sm font-semibold text-yellow-300 mb-1">Over-fueling warning</p>
+                <p className="text-sm text-brand-muted">{warning}</p>
               </div>
             </div>
           </div>
@@ -593,28 +573,28 @@ function ResultsPage({
 
         {/* Trap Scores */}
         <div className="card">
-          <h3 className="text-lg font-bold text-gray-900 mb-1">Growth Trap Profile</h3>
-          <p className="text-sm text-gray-500 mb-6">
+          <h3 className="text-lg font-bold text-brand-text mb-1">Growth Trap Profile</h3>
+          <p className="text-sm text-brand-muted mb-6">
             Higher score = more evidence of that trap in your business.
           </p>
           <TrapBarChart trapScores={trap_scores} primaryTrap={primary_trap} />
           <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div className="rounded-lg bg-red-50 border border-red-100 p-3">
-              <p className="text-xs font-semibold text-red-600 uppercase tracking-wide mb-0.5">Primary Trap</p>
-              <p className="font-semibold text-gray-900">{TRAP_LABELS[primary_trap]}</p>
-              <p className="text-xs text-gray-500 mt-1 leading-relaxed line-clamp-2">{TRAP_DESCRIPTIONS[primary_trap].split('.')[0]}.</p>
+            <div className="rounded-lg border border-red-500/20 bg-red-500/5 p-3">
+              <p className="text-xs font-semibold text-red-400 uppercase tracking-wide mb-0.5">Primary Trap</p>
+              <p className="font-semibold text-brand-text">{TRAP_LABELS[primary_trap]}</p>
+              <p className="text-xs text-brand-muted mt-1 leading-relaxed line-clamp-2">{TRAP_DESCRIPTIONS[primary_trap].split('.')[0]}.</p>
             </div>
-            <div className="rounded-lg bg-orange-50 border border-orange-100 p-3">
-              <p className="text-xs font-semibold text-orange-600 uppercase tracking-wide mb-0.5">Secondary Trap</p>
-              <p className="font-semibold text-gray-900">{TRAP_LABELS[secondary_trap]}</p>
+            <div className="rounded-lg border border-orange-500/20 bg-orange-500/5 p-3">
+              <p className="text-xs font-semibold text-orange-400 uppercase tracking-wide mb-0.5">Secondary Trap</p>
+              <p className="font-semibold text-brand-text">{TRAP_LABELS[secondary_trap]}</p>
             </div>
           </div>
         </div>
 
         {/* Flow Health */}
         <div className="card">
-          <h3 className="text-lg font-bold text-gray-900 mb-1">Flow Health Map</h3>
-          <p className="text-sm text-gray-500 mb-6">
+          <h3 className="text-lg font-bold text-brand-text mb-1">Flow Health Map</h3>
+          <p className="text-sm text-brand-muted mb-6">
             Higher score = healthier, more systematic engine in that area. Lower score = bigger gap.
           </p>
           <FlowRadarChart flowScores={flow_scores} weakestFlow={weakest_flow} />
@@ -624,89 +604,89 @@ function ResultsPage({
                 key={flow}
                 className={`rounded-lg border p-3 text-center ${
                   flow === weakest_flow
-                    ? 'border-red-200 bg-red-50'
+                    ? 'border-red-500/20 bg-red-500/5'
                     : flow === strongest_flow
-                    ? 'border-green-200 bg-green-50'
-                    : 'border-gray-100 bg-gray-50'
+                    ? 'border-brand-accent/20 bg-brand-accent/5'
+                    : 'border-brand-border bg-brand-bg'
                 }`}
               >
-                <p className="text-xs text-gray-500 mb-1">{FLOW_LABELS[flow]}</p>
+                <p className="text-xs text-brand-subtle mb-1">{FLOW_LABELS[flow]}</p>
                 <p className={`text-xl font-bold ${
-                  flow === weakest_flow ? 'text-red-600' : flow === strongest_flow ? 'text-green-600' : 'text-gray-800'
+                  flow === weakest_flow ? 'text-red-400' : flow === strongest_flow ? 'text-brand-accent' : 'text-brand-muted'
                 }`}>
                   {flow_scores[flow]}
                 </p>
-                {flow === weakest_flow && <p className="text-xs text-red-500 mt-0.5">Weakest</p>}
-                {flow === strongest_flow && <p className="text-xs text-green-500 mt-0.5">Strongest</p>}
+                {flow === weakest_flow && <p className="text-xs text-red-400 mt-0.5">Weakest</p>}
+                {flow === strongest_flow && <p className="text-xs text-brand-accent mt-0.5">Strongest</p>}
               </div>
             ))}
           </div>
         </div>
 
         {/* Constraint + Recommendation */}
-        <div className="card border-l-4 border-l-green-500">
-          <p className="text-xs font-semibold text-green-600 uppercase tracking-wide mb-2">
+        <div className="card border-l-4 border-l-brand-accent">
+          <p className="text-xs font-semibold text-brand-accent uppercase tracking-wide mb-2">
             Build First
           </p>
-          <h3 className="text-xl font-bold text-gray-900 mb-2">{recommendation.title}</h3>
-          <p className="text-sm text-gray-600 mb-4">
+          <h3 className="text-xl font-bold text-brand-text mb-2">{recommendation.title}</h3>
+          <p className="text-sm text-brand-muted mb-4">
             {SYSTEM_DESCRIPTIONS[recommended_system]}
           </p>
           <ul className="space-y-1.5 mb-6">
             {recommendation.items.map((item) => (
-              <li key={item} className="flex items-start gap-2 text-sm text-gray-700">
-                <span className="mt-0.5 text-green-500 flex-shrink-0">✓</span>
+              <li key={item} className="flex items-start gap-2 text-sm text-brand-muted">
+                <span className="mt-0.5 text-brand-accent flex-shrink-0">✓</span>
                 {item}
               </li>
             ))}
           </ul>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-            <div className="rounded-lg bg-gray-50 border border-gray-100 p-3">
-              <p className="font-semibold text-gray-700 mb-1">Stabilize next</p>
-              <p className="text-gray-500 text-xs leading-relaxed">{recommendation.stabilize}</p>
+            <div className="rounded-lg border border-brand-border bg-brand-bg p-3">
+              <p className="font-semibold text-brand-text mb-1">Stabilize next</p>
+              <p className="text-brand-subtle text-xs leading-relaxed">{recommendation.stabilize}</p>
             </div>
-            <div className="rounded-lg bg-gray-50 border border-gray-100 p-3">
-              <p className="font-semibold text-gray-700 mb-1">Add fuel later</p>
-              <p className="text-gray-500 text-xs leading-relaxed">{recommendation.addFuel}</p>
+            <div className="rounded-lg border border-brand-border bg-brand-bg p-3">
+              <p className="font-semibold text-brand-text mb-1">Add fuel later</p>
+              <p className="text-brand-subtle text-xs leading-relaxed">{recommendation.addFuel}</p>
             </div>
           </div>
         </div>
 
         {/* 30-Day Actions */}
         <div className="card">
-          <h3 className="text-lg font-bold text-gray-900 mb-1">Your 30-Day Priority Actions</h3>
-          <p className="text-sm text-gray-500 mb-5">
+          <h3 className="text-lg font-bold text-brand-text mb-1">Your 30-Day Priority Actions</h3>
+          <p className="text-sm text-brand-muted mb-5">
             Concrete moves to start building your {SYSTEM_LABELS[recommended_system].toLowerCase()}.
           </p>
           <ol className="space-y-3">
             {actions.map((action, i) => (
               <li key={i} className="flex items-start gap-3">
-                <span className="flex-shrink-0 h-6 w-6 rounded-full bg-green-100 text-green-700 text-xs font-bold flex items-center justify-center">
+                <span className="flex-shrink-0 h-6 w-6 rounded-full bg-brand-accent/15 text-brand-accent text-xs font-bold flex items-center justify-center">
                   {i + 1}
                 </span>
-                <p className="text-sm text-gray-700 leading-relaxed">{action}</p>
+                <p className="text-sm text-brand-muted leading-relaxed">{action}</p>
               </li>
             ))}
           </ol>
         </div>
 
         {/* Book a Call CTA */}
-        <div className="card bg-gray-900 text-white text-center">
-          <h3 className="text-xl font-bold mb-2">Book a Growth Engine Review</h3>
-          <p className="text-gray-300 text-sm mb-6 max-w-md mx-auto">
+        <div className="card border-brand-accent/20 text-center" style={{ backgroundColor: '#1a2200' }}>
+          <h3 className="text-xl font-bold text-brand-text mb-2">Book a Growth Engine Review</h3>
+          <p className="text-brand-muted text-sm mb-6 max-w-md mx-auto">
             We&apos;ll walk through your results, identify the real constraint, and show you what system to build first.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <a
               href="#"
-              className="inline-flex items-center justify-center rounded-lg bg-green-500 px-8 py-3 text-base font-semibold text-white hover:bg-green-400 transition-colors"
+              className="btn-primary px-8"
             >
               Book a Call
             </a>
             <button
               onClick={leadSubmitted ? undefined : onLeadCapture}
-              className="inline-flex items-center justify-center rounded-lg border border-gray-600 px-8 py-3 text-base font-semibold text-gray-200 hover:border-gray-400 transition-colors"
+              className="btn-secondary px-8"
             >
               Download PDF Report
             </button>
@@ -734,66 +714,66 @@ function LeadCaptureGate({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-6 py-10">
+    <div className="min-h-screen bg-brand-bg flex flex-col items-center justify-center px-6 py-10">
       <div className="w-full max-w-md">
         <div className="card">
           <div className="text-center mb-6">
-            <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-3">
-              <span className="text-green-600 text-xl">📄</span>
+            <div className="h-12 w-12 rounded-full bg-brand-accent/10 border border-brand-accent/20 flex items-center justify-center mx-auto mb-3">
+              <span className="text-brand-accent text-xl">📄</span>
             </div>
-            <h2 className="text-xl font-bold text-gray-900 mb-1">Get your full PDF report</h2>
-            <p className="text-sm text-gray-500">
+            <h2 className="text-xl font-bold text-brand-text mb-1">Get your full PDF report</h2>
+            <p className="text-sm text-brand-muted">
               Your personalized Growth Engine Diagnostic report includes your full breakdown, recommendations, and 30-day action plan.
             </p>
           </div>
 
           <div className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1">
-                Full name <span className="text-red-500">*</span>
+              <label className="block text-xs font-semibold text-brand-muted mb-1">
+                Full name <span className="text-red-400">*</span>
               </label>
               <input
                 type="text"
                 value={form.name}
                 onChange={(e) => set('name', e.target.value)}
                 placeholder="Jane Smith"
-                className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+                className="w-full rounded-lg border border-brand-border bg-brand-bg px-3 py-2.5 text-sm text-brand-text placeholder:text-brand-subtle focus:border-brand-accent focus:outline-none focus:ring-1 focus:ring-brand-accent"
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1">
-                Work email <span className="text-red-500">*</span>
+              <label className="block text-xs font-semibold text-brand-muted mb-1">
+                Work email <span className="text-red-400">*</span>
               </label>
               <input
                 type="email"
                 value={form.email}
                 onChange={(e) => set('email', e.target.value)}
                 placeholder="jane@company.com"
-                className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+                className="w-full rounded-lg border border-brand-border bg-brand-bg px-3 py-2.5 text-sm text-brand-text placeholder:text-brand-subtle focus:border-brand-accent focus:outline-none focus:ring-1 focus:ring-brand-accent"
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1">
-                Company <span className="text-red-500">*</span>
+              <label className="block text-xs font-semibold text-brand-muted mb-1">
+                Company <span className="text-red-400">*</span>
               </label>
               <input
                 type="text"
                 value={form.company}
                 onChange={(e) => set('company', e.target.value)}
                 placeholder="Acme Inc."
-                className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+                className="w-full rounded-lg border border-brand-border bg-brand-bg px-3 py-2.5 text-sm text-brand-text placeholder:text-brand-subtle focus:border-brand-accent focus:outline-none focus:ring-1 focus:ring-brand-accent"
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1">
-                Role <span className="text-gray-400 font-normal">(optional)</span>
+              <label className="block text-xs font-semibold text-brand-muted mb-1">
+                Role <span className="text-brand-subtle font-normal">(optional)</span>
               </label>
               <input
                 type="text"
                 value={form.role}
                 onChange={(e) => set('role', e.target.value)}
                 placeholder="CEO, COO, VP Operations..."
-                className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+                className="w-full rounded-lg border border-brand-border bg-brand-bg px-3 py-2.5 text-sm text-brand-text placeholder:text-brand-subtle focus:border-brand-accent focus:outline-none focus:ring-1 focus:ring-brand-accent"
               />
             </div>
           </div>
@@ -808,13 +788,13 @@ function LeadCaptureGate({
             </button>
             <button
               onClick={onSkip}
-              className="w-full text-sm text-gray-400 hover:text-gray-600 transition-colors py-2"
+              className="w-full text-sm text-brand-subtle hover:text-brand-muted transition-colors py-2"
             >
               Skip — view results without PDF
             </button>
           </div>
 
-          <p className="text-xs text-gray-400 text-center mt-4">
+          <p className="text-xs text-brand-subtle text-center mt-4">
             No spam. We&apos;ll only send you your report and one follow-up about the diagnostic.
           </p>
         </div>

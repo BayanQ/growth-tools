@@ -40,24 +40,30 @@ export function TrapBarChart({ trapScores, primaryTrap }: Props) {
           layout="vertical"
           margin={{ top: 4, right: 24, left: 8, bottom: 4 }}
         >
-          <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+          <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#2a2a2a" />
           <XAxis
             type="number"
             domain={[0, 100]}
             tickCount={6}
-            tick={{ fontSize: 11, fill: '#6b7280' }}
+            tick={{ fontSize: 11, fill: '#525252' }}
+            axisLine={{ stroke: '#2a2a2a' }}
+            tickLine={{ stroke: '#2a2a2a' }}
           />
           <YAxis
             type="category"
             dataKey="name"
             width={170}
-            tick={{ fontSize: 12, fill: '#374151' }}
+            tick={{ fontSize: 12, fill: '#a3a3a3' }}
+            axisLine={false}
+            tickLine={false}
           />
           <Tooltip
             formatter={(value: number) => [`${value}/100`, 'Trap Score']}
             contentStyle={{
               borderRadius: '8px',
-              border: '1px solid #e5e7eb',
+              border: '1px solid #2a2a2a',
+              backgroundColor: '#1d1d1d',
+              color: '#f5f5f5',
               fontSize: '13px',
             }}
           />
@@ -65,8 +71,8 @@ export function TrapBarChart({ trapScores, primaryTrap }: Props) {
             {data.map((entry, index) => (
               <Cell
                 key={`cell-${index}`}
-                fill={entry.isPrimary ? '#dc2626' : '#fb923c'}
-                opacity={entry.isPrimary ? 1 : 0.7}
+                fill={entry.isPrimary ? '#ef4444' : '#f97316'}
+                opacity={entry.isPrimary ? 1 : 0.65}
               />
             ))}
           </Bar>

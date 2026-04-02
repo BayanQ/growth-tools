@@ -8,14 +8,22 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['var(--font-inter)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+      },
       colors: {
+        // GrowthSpan brand tokens
         brand: {
-          50: '#f0fdf4',
-          100: '#dcfce7',
-          500: '#22c55e',
-          600: '#16a34a',
-          700: '#15803d',
-          900: '#14532d',
+          bg: '#171717',
+          surface: '#1d1d1d',
+          border: '#2a2a2a',
+          accent: '#cbfb45',
+          'accent-hover': '#b8e53a',
+          blue: '#2895f7',
+          'blue-deep': '#0082f3',
+          text: '#f5f5f5',
+          muted: '#a3a3a3',
+          subtle: '#525252',
         },
       },
     },
