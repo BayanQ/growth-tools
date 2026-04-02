@@ -1,0 +1,939 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { QUESTIONS } from '@/lib/questions';
+import { score } from '@/lib/scoring';
+import { ScoringOutput, UserAnswers } from '@/lib/types';
+import {
+  TRAP_LABELS,
+  FLOW_LABELS,
+  SYSTEM_LABELS,
+  TRAP_DESCRIPTIONS,
+  SYSTEM_DESCRIPTIONS,
+  THIRTY_DAY_ACTIONS,
+  BUILD_FIRST_RECOMMENDATIONS,
+  ARCHETYPE_BY_TRAP,
+  ARCHETYPE_NAMES,
+  buildExecutiveSummary,
+} from '@/lib/content';
+import { TrapBarChart } from '@/components/TrapBarChart';
+import { FlowRadarChart } from '@/components/FlowRadarChart';
+
+// ── Types ─────────────────────────────────────────────────────────────────
+
+type AppState =
+  | 'landing'
+  | 'intake'
+  | 'questions'
+  | 'loading'
+  | 'results'
+  | 'lead_capture';
+
+interface IntakeData {
+  revenueRange: string;
+  employeeRange: string;
+  businessModel: string;
+  growthGoal: string;
+  leadershipStructure: string;
+}
+
+interface LeadData {
+  name: string;
+  email: string;
+  company: string;
+  role: string;
+}
+
+const SECTION_NAMES: Record<string, string> = {
+  symptoms: 'Symptoms',
+  demand: 'Demand',
+  sales: 'Sales',
+  delivery: 'Delivery',
+  expansion: 'Expansion',
+  leadership: 'Leadership',
+};
+
+const SECTIONS_ORDER = ['symptoms', 'demand', 'sales', 'delivery', 'expansion', 'leadership'];
+
+// ── ProgressBar ───────────────────────────────────────────────────────────
+
+function ProgressBar({ current, total }: { current: number; total: number }) {
+  const pct = Math.round((current / total) * 100);
+  return (
+    <div className="mb-8">
+      <div className="flex items-center justify-between text-sm text-gray-500 mb-2">
+        <span>Question {current} of {total}</span>
+        <span>{pct}% complete</span>
+      </div>
+      <div className="h-2 w-full rounded-full bg-gray-200">
+        <div
+          className="h-2 rounded-full bg-green-500 transition-all duration-300"
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+    </div>
+  );
+}
+
+// ── Landing ───────────────────────────────────────────────────────────────
+
+function Landing({ onStart, onSampleReport }: { onStart: () => void; onSampleReport: () => void }) {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white flex flex-col">
+      <nav className="px-6 py-5 max-w-5xl mx-auto w-full flex items-center justify-between">
+        <span className="text-green-400 font-bold text-lg tracking-tight">Growth Engine</span>
+        <button
+          onClick={onStart}
+          className="text-sm font-medium text-gray-300 hover:text-white transition-colors"
+        >
+          Start Diagnostic →
+        </button>
+      </nav>
+
+      <main className="flex-1 flex flex-col items-center justify-center px-6 py-20 text-center max-w-3xl mx-auto w-full">
+        <div className="inline-flex items-center rounded-full border border-green-500/30 bg-green-500/10 px-4 py-1.5 text-sm font-medium text-green-400 mb-8">
+          Free Operator Diagnostic
+        </div>
+
+        <h1 className="text-5xl md:text-6xl font-bold tracking-tight mb-6 leading-tight">
+          Growth Engine
+          <br />
+          <span className="text-green-400">Diagnostic</span>
+        </h1>
+
+        <p className="text-xl text-gray-300 mb-4 max-w-xl">
+          Find the growth traps slowing your business — and the systems you need to build first.
+        </p>
+
+        <p className="text-sm text-gray-500 mb-12 max-w-lg">
+          Growth problems are usually system problems. More leads, hires, or spend don't fix a weak engine.
+          This tool helps you find the constraint before you add more fuel.
+        </p>
+
+        <div className="flex flex-col sm:flex-row gap-4 justify-center w-full max-w-sm mx-auto">
+          <button
+            onClick={onStart}
+            className="btn-primary text-base w-full sm:w-auto"
+          >
+            Start Diagnostic
+          </button>
+          <button
+            onClick={onSampleReport}
+            className="btn-secondary text-base w-full sm:w-auto"
+          >
+            See Sample Report
+          </button>
+        </div>
+
+        <div className="mt-16 grid grid-cols-3 gap-8 max-w-lg mx-auto text-center">
+          <div>
+            <div className="text-2xl font-bold text-white">24</div>
+            <div className="text-xs text-gray-400 mt-1">Questions</div>
+          </div>
+          <div>
+            <div className="text-2xl font-bold text-white">6–8 min</div>
+            <div className="text-xs text-gray-400 mt-1">Completion time</div>
+          </div>
+          <div>
+            <div className="text-2xl font-bold text-white">Free</div>
+            <div className="text-xs text-gray-400 mt-1">No signup needed</div>
+          </div>
+        </div>
+      </main>
+
+      <footer className="px-6 py-6 text-center text-xs text-gray-600 max-w-5xl mx-auto w-full">
+        No personal information required to complete the diagnostic. Lead capture is optional, for your PDF report only.
+      </footer>
+    </div>
+  );
+}
+
+// ── Intake ────────────────────────────────────────────────────────────────
+
+function IntakeForm({ onSubmit }: { onSubmit: (data: IntakeData) => void }) {
+  const [form, setForm] = useState<IntakeData>({
+    revenueRange: '',
+    employeeRange: '',
+    businessModel: '',
+    growthGoal: '',
+    leadershipStructure: '',
+  });
+
+  const isValid = form.revenueRange && form.employeeRange && form.businessModel;
+
+  function set(key: keyof IntakeData, value: string) {
+    setForm((f) => ({ ...f, [key]: value }));
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <header className="bg-white border-b border-gray-100 px-6 py-4">
+        <div className="max-w-2xl mx-auto flex items-center gap-2">
+          <span className="text-green-600 font-bold">Growth Engine</span>
+          <span className="text-gray-300">›</span>
+          <span className="text-gray-500 text-sm">Context</span>
+        </div>
+      </header>
+
+      <main className="flex-1 px-6 py-10 max-w-2xl mx-auto w-full">
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">A bit of context first</h2>
+        <p className="text-gray-500 mb-8 text-sm">
+          No personal information. These inputs calibrate your results — the more accurate, the more useful.
+        </p>
+
+        <div className="space-y-8">
+          {/* Revenue Range */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-3">
+              Annual revenue range <span className="text-red-500">*</span>
+            </label>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              {['Under $1M', '$1M – $3M', '$3M – $10M', '$10M – $25M', '$25M – $50M', '$50M – $100M', '$100M+'].map((opt) => (
+                <button
+                  key={opt}
+                  onClick={() => set('revenueRange', opt)}
+                  className={`rounded-lg border px-3 py-2.5 text-sm font-medium transition-all text-left ${
+                    form.revenueRange === opt
+                      ? 'border-green-600 bg-green-50 text-green-700'
+                      : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  {opt}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Employee Range */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-3">
+              Team size <span className="text-red-500">*</span>
+            </label>
+            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+              {['1–5', '6–10', '11–25', '26–50', '51–100', '101–200', '201–300', '300+'].map((opt) => (
+                <button
+                  key={opt}
+                  onClick={() => set('employeeRange', opt)}
+                  className={`rounded-lg border px-3 py-2.5 text-sm font-medium transition-all text-center ${
+                    form.employeeRange === opt
+                      ? 'border-green-600 bg-green-50 text-green-700'
+                      : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  {opt}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Business Model */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-3">
+              Business model <span className="text-red-500">*</span>
+            </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {[
+                'Services (agency, consulting, professional services)',
+                'SaaS / software',
+                'Tech-enabled services',
+                'Marketplace / platform',
+                'E-commerce / DTC',
+                'Manufacturing / CPG',
+                'Industrial / hardware',
+                'Healthcare / clinics / providers',
+                'Other',
+              ].map((opt) => (
+                <button
+                  key={opt}
+                  onClick={() => set('businessModel', opt)}
+                  className={`rounded-lg border px-3 py-2.5 text-sm font-medium transition-all text-left ${
+                    form.businessModel === opt
+                      ? 'border-green-600 bg-green-50 text-green-700'
+                      : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  {opt}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Growth Goal (optional) */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Primary growth goal <span className="text-gray-400 font-normal">(optional)</span>
+            </label>
+            <p className="text-xs text-gray-400 mb-3">Skip if none apply strongly right now.</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {[
+                'Increase new customer acquisition',
+                'Improve conversion (sales effectiveness)',
+                'Improve delivery capacity / margins',
+                'Increase expansion (upsell, retention)',
+                'Reduce founder dependency',
+                'Prepare for exit / scale',
+              ].map((opt) => (
+                <button
+                  key={opt}
+                  onClick={() => set('growthGoal', form.growthGoal === opt ? '' : opt)}
+                  className={`rounded-lg border px-3 py-2.5 text-sm font-medium transition-all text-left ${
+                    form.growthGoal === opt
+                      ? 'border-green-600 bg-green-50 text-green-700'
+                      : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  {opt}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Leadership Structure (optional) */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              Leadership structure <span className="text-gray-400 font-normal">(optional)</span>
+            </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {[
+                'Founder-led (founder in day-to-day decisions)',
+                'Operator-led (team runs day-to-day)',
+                'Mixed',
+              ].map((opt) => (
+                <button
+                  key={opt}
+                  onClick={() => set('leadershipStructure', form.leadershipStructure === opt ? '' : opt)}
+                  className={`rounded-lg border px-3 py-2.5 text-sm font-medium transition-all text-left ${
+                    form.leadershipStructure === opt
+                      ? 'border-green-600 bg-green-50 text-green-700'
+                      : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  {opt}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-10">
+          <button
+            onClick={() => isValid && onSubmit(form)}
+            disabled={!isValid}
+            className="btn-primary w-full sm:w-auto"
+          >
+            Start Diagnostic →
+          </button>
+          {!isValid && (
+            <p className="text-xs text-gray-400 mt-2">
+              Please select revenue range, team size, and business model to continue.
+            </p>
+          )}
+        </div>
+      </main>
+    </div>
+  );
+}
+
+// ── Question Flow ─────────────────────────────────────────────────────────
+
+function QuestionFlow({
+  answers,
+  onAnswer,
+  onComplete,
+}: {
+  answers: UserAnswers;
+  onAnswer: (id: number, value: number) => void;
+  onComplete: () => void;
+}) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const question = QUESTIONS[currentIndex];
+  const total = QUESTIONS.length;
+  const answeredCount = Object.keys(answers).length;
+  const currentAnswer = answers[question.id];
+
+  const currentSection = question.section;
+  const sectionLabel = SECTION_NAMES[currentSection] ?? currentSection;
+
+  function handleSelect(value: number) {
+    onAnswer(question.id, value);
+  }
+
+  function handleNext() {
+    if (currentIndex < total - 1) {
+      setCurrentIndex((i) => i + 1);
+    } else {
+      onComplete();
+    }
+  }
+
+  function handlePrev() {
+    if (currentIndex > 0) setCurrentIndex((i) => i - 1);
+  }
+
+  const scaleLabels = ['Strongly disagree', 'Disagree', 'Neutral / mixed', 'Agree', 'Strongly agree'];
+
+  return (
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <header className="bg-white border-b border-gray-100 px-6 py-4">
+        <div className="max-w-2xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="text-green-600 font-bold">Growth Engine</span>
+            <span className="text-gray-300">›</span>
+            <span className="text-gray-500 text-sm">Diagnostic</span>
+          </div>
+          <span className="text-xs text-gray-400">{answeredCount}/{total} answered</span>
+        </div>
+      </header>
+
+      <main className="flex-1 px-6 py-10 max-w-2xl mx-auto w-full flex flex-col">
+        <ProgressBar current={currentIndex + 1} total={total} />
+
+        {/* Section label */}
+        <div className="mb-6">
+          <span className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-600 uppercase tracking-wide">
+            Section {SECTIONS_ORDER.indexOf(currentSection) + 1} of {SECTIONS_ORDER.length} — {sectionLabel}
+          </span>
+        </div>
+
+        {/* Question */}
+        <div className="card flex-1 flex flex-col">
+          <p className="text-lg font-semibold text-gray-900 leading-relaxed mb-8">
+            {question.text}
+          </p>
+
+          {/* Scale */}
+          <div className="space-y-3 mb-8">
+            <div className="flex justify-between text-xs text-gray-400 px-1 mb-1">
+              <span>Strongly disagree</span>
+              <span>Strongly agree</span>
+            </div>
+            <div className="flex justify-center gap-3">
+              {[1, 2, 3, 4, 5].map((v) => (
+                <button
+                  key={v}
+                  onClick={() => handleSelect(v)}
+                  className={`scale-btn ${
+                    currentAnswer === v ? 'scale-btn-active' : 'scale-btn-inactive'
+                  }`}
+                  title={scaleLabels[v - 1]}
+                >
+                  {v}
+                </button>
+              ))}
+            </div>
+            {currentAnswer && (
+              <p className="text-center text-sm text-gray-500 mt-1">
+                {scaleLabels[currentAnswer - 1]}
+              </p>
+            )}
+          </div>
+
+          {/* Navigation */}
+          <div className="flex justify-between items-center mt-auto pt-4 border-t border-gray-100">
+            <button
+              onClick={handlePrev}
+              disabled={currentIndex === 0}
+              className="text-sm text-gray-500 hover:text-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            >
+              ← Previous
+            </button>
+
+            <button
+              onClick={handleNext}
+              disabled={!currentAnswer}
+              className="btn-primary disabled:opacity-40"
+            >
+              {currentIndex === total - 1 ? 'See Results →' : 'Next →'}
+            </button>
+          </div>
+        </div>
+
+        {/* Section navigation dots */}
+        <div className="flex justify-center gap-2 mt-6">
+          {SECTIONS_ORDER.map((sec) => {
+            const secQuestions = QUESTIONS.filter((q) => q.section === sec);
+            const secAnswered = secQuestions.filter((q) => answers[q.id]).length;
+            const isActive = sec === currentSection;
+            const isComplete = secAnswered === secQuestions.length;
+            return (
+              <div
+                key={sec}
+                className={`h-1.5 rounded-full transition-all ${
+                  isActive
+                    ? 'w-8 bg-green-500'
+                    : isComplete
+                    ? 'w-4 bg-green-300'
+                    : 'w-4 bg-gray-200'
+                }`}
+                title={SECTION_NAMES[sec]}
+              />
+            );
+          })}
+        </div>
+      </main>
+    </div>
+  );
+}
+
+// ── Loading Screen ────────────────────────────────────────────────────────
+
+function LoadingScreen() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center text-center px-6">
+      <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-green-600 mb-6" />
+      <h2 className="text-xl font-bold text-gray-900 mb-2">Analyzing your responses...</h2>
+      <p className="text-gray-500 text-sm max-w-xs">
+        Scoring your growth engine, identifying traps, and mapping your constraint.
+      </p>
+    </div>
+  );
+}
+
+// ── Results Page ─────────────────────────────────────────────────────────
+
+function ResultsPage({
+  output,
+  intake,
+  onLeadCapture,
+  leadSubmitted,
+}: {
+  output: ScoringOutput;
+  intake: IntakeData;
+  onLeadCapture: () => void;
+  leadSubmitted: boolean;
+}) {
+  const {
+    trap_scores,
+    flow_scores,
+    primary_trap,
+    secondary_trap,
+    weakest_flow,
+    strongest_flow,
+    constraint,
+    recommended_system,
+    warning,
+  } = output;
+
+  const archetype = ARCHETYPE_BY_TRAP[primary_trap];
+  const archetypeName = ARCHETYPE_NAMES[archetype];
+  const summary = buildExecutiveSummary(output);
+  const recommendation = BUILD_FIRST_RECOMMENDATIONS[recommended_system];
+  const actions = THIRTY_DAY_ACTIONS[recommended_system];
+
+  return (
+    <div className="min-h-screen bg-gray-50 pb-20">
+      <header className="bg-white border-b border-gray-100 px-6 py-4 sticky top-0 z-10">
+        <div className="max-w-3xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="text-green-600 font-bold">Growth Engine</span>
+            <span className="text-gray-300">›</span>
+            <span className="text-gray-500 text-sm">Your Results</span>
+          </div>
+          {leadSubmitted ? (
+            <a
+              href="#"
+              onClick={async (e) => {
+                e.preventDefault();
+                const res = await fetch('/api/report', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ output }),
+                });
+                const blob = await res.blob();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'growth-engine-diagnostic.pdf';
+                a.click();
+                URL.revokeObjectURL(url);
+              }}
+              className="btn-primary text-sm py-2"
+            >
+              Download PDF Report
+            </a>
+          ) : (
+            <button onClick={onLeadCapture} className="btn-primary text-sm py-2">
+              Download PDF Report
+            </button>
+          )}
+        </div>
+      </header>
+
+      <main className="max-w-3xl mx-auto px-6 py-10 space-y-8">
+        {/* Archetype + Summary */}
+        <div className="card border-green-200 bg-green-50">
+          <div className="flex items-start gap-4">
+            <div className="flex-1">
+              <p className="text-xs font-semibold text-green-600 uppercase tracking-wide mb-1">
+                Your Growth Profile
+              </p>
+              <h2 className="text-2xl font-bold text-gray-900 mb-3">{archetypeName}</h2>
+              <p
+                className="text-gray-700 leading-relaxed"
+                dangerouslySetInnerHTML={{
+                  __html: summary.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>'),
+                }}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Over-fueling warning */}
+        {warning && (
+          <div className="card border-amber-200 bg-amber-50">
+            <div className="flex gap-3">
+              <span className="text-amber-500 text-lg">⚠</span>
+              <div>
+                <p className="text-sm font-semibold text-amber-800 mb-1">Over-fueling warning</p>
+                <p className="text-sm text-amber-700">{warning}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Trap Scores */}
+        <div className="card">
+          <h3 className="text-lg font-bold text-gray-900 mb-1">Growth Trap Profile</h3>
+          <p className="text-sm text-gray-500 mb-6">
+            Higher score = more evidence of that trap in your business.
+          </p>
+          <TrapBarChart trapScores={trap_scores} primaryTrap={primary_trap} />
+          <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="rounded-lg bg-red-50 border border-red-100 p-3">
+              <p className="text-xs font-semibold text-red-600 uppercase tracking-wide mb-0.5">Primary Trap</p>
+              <p className="font-semibold text-gray-900">{TRAP_LABELS[primary_trap]}</p>
+              <p className="text-xs text-gray-500 mt-1 leading-relaxed line-clamp-2">{TRAP_DESCRIPTIONS[primary_trap].split('.')[0]}.</p>
+            </div>
+            <div className="rounded-lg bg-orange-50 border border-orange-100 p-3">
+              <p className="text-xs font-semibold text-orange-600 uppercase tracking-wide mb-0.5">Secondary Trap</p>
+              <p className="font-semibold text-gray-900">{TRAP_LABELS[secondary_trap]}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Flow Health */}
+        <div className="card">
+          <h3 className="text-lg font-bold text-gray-900 mb-1">Flow Health Map</h3>
+          <p className="text-sm text-gray-500 mb-6">
+            Higher score = healthier, more systematic engine in that area. Lower score = bigger gap.
+          </p>
+          <FlowRadarChart flowScores={flow_scores} weakestFlow={weakest_flow} />
+          <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {(['demand', 'sales', 'delivery', 'expansion'] as const).map((flow) => (
+              <div
+                key={flow}
+                className={`rounded-lg border p-3 text-center ${
+                  flow === weakest_flow
+                    ? 'border-red-200 bg-red-50'
+                    : flow === strongest_flow
+                    ? 'border-green-200 bg-green-50'
+                    : 'border-gray-100 bg-gray-50'
+                }`}
+              >
+                <p className="text-xs text-gray-500 mb-1">{FLOW_LABELS[flow]}</p>
+                <p className={`text-xl font-bold ${
+                  flow === weakest_flow ? 'text-red-600' : flow === strongest_flow ? 'text-green-600' : 'text-gray-800'
+                }`}>
+                  {flow_scores[flow]}
+                </p>
+                {flow === weakest_flow && <p className="text-xs text-red-500 mt-0.5">Weakest</p>}
+                {flow === strongest_flow && <p className="text-xs text-green-500 mt-0.5">Strongest</p>}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Constraint + Recommendation */}
+        <div className="card border-l-4 border-l-green-500">
+          <p className="text-xs font-semibold text-green-600 uppercase tracking-wide mb-2">
+            Build First
+          </p>
+          <h3 className="text-xl font-bold text-gray-900 mb-2">{recommendation.title}</h3>
+          <p className="text-sm text-gray-600 mb-4">
+            {SYSTEM_DESCRIPTIONS[recommended_system]}
+          </p>
+          <ul className="space-y-1.5 mb-6">
+            {recommendation.items.map((item) => (
+              <li key={item} className="flex items-start gap-2 text-sm text-gray-700">
+                <span className="mt-0.5 text-green-500 flex-shrink-0">✓</span>
+                {item}
+              </li>
+            ))}
+          </ul>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+            <div className="rounded-lg bg-gray-50 border border-gray-100 p-3">
+              <p className="font-semibold text-gray-700 mb-1">Stabilize next</p>
+              <p className="text-gray-500 text-xs leading-relaxed">{recommendation.stabilize}</p>
+            </div>
+            <div className="rounded-lg bg-gray-50 border border-gray-100 p-3">
+              <p className="font-semibold text-gray-700 mb-1">Add fuel later</p>
+              <p className="text-gray-500 text-xs leading-relaxed">{recommendation.addFuel}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* 30-Day Actions */}
+        <div className="card">
+          <h3 className="text-lg font-bold text-gray-900 mb-1">Your 30-Day Priority Actions</h3>
+          <p className="text-sm text-gray-500 mb-5">
+            Concrete moves to start building your {SYSTEM_LABELS[recommended_system].toLowerCase()}.
+          </p>
+          <ol className="space-y-3">
+            {actions.map((action, i) => (
+              <li key={i} className="flex items-start gap-3">
+                <span className="flex-shrink-0 h-6 w-6 rounded-full bg-green-100 text-green-700 text-xs font-bold flex items-center justify-center">
+                  {i + 1}
+                </span>
+                <p className="text-sm text-gray-700 leading-relaxed">{action}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+
+        {/* Book a Call CTA */}
+        <div className="card bg-gray-900 text-white text-center">
+          <h3 className="text-xl font-bold mb-2">Book a Growth Engine Review</h3>
+          <p className="text-gray-300 text-sm mb-6 max-w-md mx-auto">
+            We&apos;ll walk through your results, identify the real constraint, and show you what system to build first.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <a
+              href="#"
+              className="inline-flex items-center justify-center rounded-lg bg-green-500 px-8 py-3 text-base font-semibold text-white hover:bg-green-400 transition-colors"
+            >
+              Book a Call
+            </a>
+            <button
+              onClick={leadSubmitted ? undefined : onLeadCapture}
+              className="inline-flex items-center justify-center rounded-lg border border-gray-600 px-8 py-3 text-base font-semibold text-gray-200 hover:border-gray-400 transition-colors"
+            >
+              Download PDF Report
+            </button>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
+
+// ── Lead Capture Gate ─────────────────────────────────────────────────────
+
+function LeadCaptureGate({
+  onSubmit,
+  onSkip,
+}: {
+  onSubmit: (data: LeadData) => void;
+  onSkip: () => void;
+}) {
+  const [form, setForm] = useState<LeadData>({ name: '', email: '', company: '', role: '' });
+  const isValid = form.name.trim() && form.email.trim() && form.email.includes('@') && form.company.trim();
+
+  function set(key: keyof LeadData, value: string) {
+    setForm((f) => ({ ...f, [key]: value }));
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-6 py-10">
+      <div className="w-full max-w-md">
+        <div className="card">
+          <div className="text-center mb-6">
+            <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-3">
+              <span className="text-green-600 text-xl">📄</span>
+            </div>
+            <h2 className="text-xl font-bold text-gray-900 mb-1">Get your full PDF report</h2>
+            <p className="text-sm text-gray-500">
+              Your personalized Growth Engine Diagnostic report includes your full breakdown, recommendations, and 30-day action plan.
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 mb-1">
+                Full name <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                value={form.name}
+                onChange={(e) => set('name', e.target.value)}
+                placeholder="Jane Smith"
+                className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 mb-1">
+                Work email <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="email"
+                value={form.email}
+                onChange={(e) => set('email', e.target.value)}
+                placeholder="jane@company.com"
+                className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 mb-1">
+                Company <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                value={form.company}
+                onChange={(e) => set('company', e.target.value)}
+                placeholder="Acme Inc."
+                className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 mb-1">
+                Role <span className="text-gray-400 font-normal">(optional)</span>
+              </label>
+              <input
+                type="text"
+                value={form.role}
+                onChange={(e) => set('role', e.target.value)}
+                placeholder="CEO, COO, VP Operations..."
+                className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+              />
+            </div>
+          </div>
+
+          <div className="mt-6 space-y-2">
+            <button
+              onClick={() => isValid && onSubmit(form)}
+              disabled={!isValid}
+              className="btn-primary w-full disabled:opacity-40"
+            >
+              Send me the PDF report
+            </button>
+            <button
+              onClick={onSkip}
+              className="w-full text-sm text-gray-400 hover:text-gray-600 transition-colors py-2"
+            >
+              Skip — view results without PDF
+            </button>
+          </div>
+
+          <p className="text-xs text-gray-400 text-center mt-4">
+            No spam. We&apos;ll only send you your report and one follow-up about the diagnostic.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Sample Report data ─────────────────────────────────────────────────────
+
+function buildSampleOutput(): ScoringOutput {
+  const sampleAnswers: UserAnswers = {
+    1: 4, 2: 4, 3: 3, 4: 4, 5: 3, 6: 3,
+    7: 3, 8: 3, 9: 3, 10: 3,
+    11: 2, 12: 2, 13: 2, 14: 2,
+    15: 2, 16: 2, 17: 2, 18: 3,
+    19: 3, 20: 3, 21: 3,
+    22: 4, 23: 4, 24: 3,
+  };
+  return score(sampleAnswers);
+}
+
+const SAMPLE_INTAKE: IntakeData = {
+  revenueRange: '$3M – $10M',
+  employeeRange: '11–25',
+  businessModel: 'Services (agency, consulting, professional services)',
+  growthGoal: 'Improve delivery capacity / margins',
+  leadershipStructure: 'Founder-led (founder in day-to-day decisions)',
+};
+
+// ── App Root ──────────────────────────────────────────────────────────────
+
+export default function App() {
+  const [state, setState] = useState<AppState>('landing');
+  const [intake, setIntake] = useState<IntakeData | null>(null);
+  const [answers, setAnswers] = useState<UserAnswers>({});
+  const [output, setOutput] = useState<ScoringOutput | null>(null);
+  const [leadSubmitted, setLeadSubmitted] = useState(false);
+
+  function handleIntakeSubmit(data: IntakeData) {
+    setIntake(data);
+    setState('questions');
+  }
+
+  function handleAnswer(id: number, value: number) {
+    setAnswers((a) => ({ ...a, [id]: value }));
+  }
+
+  function handleQuestionsComplete() {
+    setState('loading');
+    setTimeout(() => {
+      const result = score(answers);
+      setOutput(result);
+      setState('results');
+    }, 1800);
+  }
+
+  async function handleLeadSubmit(data: LeadData) {
+    setLeadSubmitted(true);
+    setState('results');
+
+    // Fire-and-forget: send report email + generate PDF
+    if (output) {
+      fetch('/api/send-report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ output, lead: data }),
+      }).catch(console.error);
+    }
+  }
+
+  function handleSampleReport() {
+    const sampleOutput = buildSampleOutput();
+    setOutput(sampleOutput);
+    setIntake(SAMPLE_INTAKE);
+    setState('results');
+  }
+
+  if (state === 'landing') {
+    return <Landing onStart={() => setState('intake')} onSampleReport={handleSampleReport} />;
+  }
+
+  if (state === 'intake') {
+    return <IntakeForm onSubmit={handleIntakeSubmit} />;
+  }
+
+  if (state === 'questions') {
+    return (
+      <QuestionFlow
+        answers={answers}
+        onAnswer={handleAnswer}
+        onComplete={handleQuestionsComplete}
+      />
+    );
+  }
+
+  if (state === 'loading') {
+    return <LoadingScreen />;
+  }
+
+  if (state === 'results' && output && intake) {
+    return (
+      <ResultsPage
+        output={output}
+        intake={intake}
+        onLeadCapture={() => setState('lead_capture')}
+        leadSubmitted={leadSubmitted}
+      />
+    );
+  }
+
+  if (state === 'lead_capture') {
+    return (
+      <LeadCaptureGate
+        onSubmit={handleLeadSubmit}
+        onSkip={() => setState('results')}
+      />
+    );
+  }
+
+  return null;
+}
