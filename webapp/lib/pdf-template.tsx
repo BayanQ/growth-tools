@@ -37,7 +37,7 @@ const s = StyleSheet.create({
   // Header
   header: {
     borderBottomWidth: 2,
-    borderBottomColor: '#16a34a',
+    borderBottomColor: '#4d65ff',
     paddingBottom: 14,
     marginBottom: 24,
     flexDirection: 'row',
@@ -56,7 +56,7 @@ const s = StyleSheet.create({
   },
   headerBadge: {
     fontSize: 9,
-    color: '#16a34a',
+    color: '#4d65ff',
     fontFamily: 'Helvetica-Bold',
     textAlign: 'right',
   },
@@ -71,7 +71,7 @@ const s = StyleSheet.create({
     color: '#111827',
     marginBottom: 4,
     borderLeftWidth: 3,
-    borderLeftColor: '#16a34a',
+    borderLeftColor: '#4d65ff',
     paddingLeft: 8,
   },
   sectionSubtitle: {
@@ -83,17 +83,17 @@ const s = StyleSheet.create({
 
   // Summary card
   summaryCard: {
-    backgroundColor: '#f0fdf4',
+    backgroundColor: '#eef0ff',
     borderRadius: 6,
     padding: 12,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#bbf7d0',
+    borderColor: '#c7d0ff',
   },
   summaryLabel: {
     fontSize: 8,
     fontFamily: 'Helvetica-Bold',
-    color: '#16a34a',
+    color: '#4d65ff',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
     marginBottom: 4,
@@ -193,7 +193,7 @@ const s = StyleSheet.create({
   // Recommendation
   recCard: {
     borderLeftWidth: 3,
-    borderLeftColor: '#16a34a',
+    borderLeftColor: '#4d65ff',
     backgroundColor: '#f9fafb',
     padding: 12,
     borderRadius: 6,
@@ -202,7 +202,7 @@ const s = StyleSheet.create({
   recLabel: {
     fontSize: 8,
     fontFamily: 'Helvetica-Bold',
-    color: '#16a34a',
+    color: '#4d65ff',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
     marginBottom: 3,
@@ -226,7 +226,7 @@ const s = StyleSheet.create({
   },
   recCheck: {
     fontSize: 9,
-    color: '#16a34a',
+    color: '#4d65ff',
     width: 10,
   },
   recItemText: {
@@ -270,14 +270,14 @@ const s = StyleSheet.create({
     width: 18,
     height: 18,
     borderRadius: 9,
-    backgroundColor: '#dcfce7',
+    backgroundColor: '#e5e8ff',
     alignItems: 'center',
     justifyContent: 'center',
   },
   actionNumText: {
     fontSize: 8,
     fontFamily: 'Helvetica-Bold',
-    color: '#15803d',
+    color: '#3a52e8',
   },
   actionText: {
     flex: 1,
@@ -289,7 +289,7 @@ const s = StyleSheet.create({
 
   // CTA
   ctaBox: {
-    backgroundColor: '#111827',
+    backgroundColor: '#eef0ff',
     borderRadius: 8,
     padding: 16,
     marginTop: 4,
@@ -298,18 +298,18 @@ const s = StyleSheet.create({
   ctaTitle: {
     fontSize: 13,
     fontFamily: 'Helvetica-Bold',
-    color: '#ffffff',
+    color: '#111827',
     marginBottom: 4,
   },
   ctaText: {
     fontSize: 9,
-    color: '#9ca3af',
+    color: '#6b7280',
     textAlign: 'center',
     marginBottom: 10,
     lineHeight: 1.5,
   },
   ctaBtn: {
-    backgroundColor: '#16a34a',
+    backgroundColor: '#4d65ff',
     borderRadius: 6,
     paddingHorizontal: 20,
     paddingVertical: 7,
@@ -466,15 +466,15 @@ export function GrowthEngineDiagnosticPDF({
               const sc = flow_scores[flow];
               const isWeakest = flow === weakest_flow;
               const isStrongest = flow === strongest_flow;
-              const bg = isWeakest ? '#fef2f2' : isStrongest ? '#f0fdf4' : '#f9fafb';
-              const border = isWeakest ? '#fecaca' : isStrongest ? '#bbf7d0' : '#e5e7eb';
-              const scoreColor = isWeakest ? '#dc2626' : isStrongest ? '#16a34a' : '#374151';
+              const bg = isWeakest ? '#fef2f2' : isStrongest ? '#f0f1ff' : '#f9fafb';
+              const border = isWeakest ? '#fecaca' : isStrongest ? '#dce0ff' : '#e5e7eb';
+              const scoreColor = isWeakest ? '#dc2626' : isStrongest ? '#4d65ff' : '#374151';
               return (
                 <View key={flow} style={[s.flowBox, { backgroundColor: bg, borderColor: border }]}>
                   <Text style={s.flowBoxLabel}>{FLOW_LABELS[flow]}</Text>
                   <Text style={[s.flowBoxScore, { color: scoreColor }]}>{sc}</Text>
                   {isWeakest && <Text style={[s.flowBoxTag, { color: '#dc2626' }]}>Weakest</Text>}
-                  {isStrongest && <Text style={[s.flowBoxTag, { color: '#16a34a' }]}>Strongest</Text>}
+                  {isStrongest && <Text style={[s.flowBoxTag, { color: '#4d65ff' }]}>Strongest</Text>}
                 </View>
               );
             })}

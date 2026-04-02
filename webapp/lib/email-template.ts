@@ -82,13 +82,13 @@ export function buildDiagnosticEmailHtml(data: EmailData): string {
     const sc = flow_scores[flow];
     const isWeakest = flow === weakest_flow;
     const isStrongest = flow === strongest_flow;
-    const bg = isWeakest ? '#fef2f2' : isStrongest ? '#f0fdf4' : '#f9fafb';
-    const border = isWeakest ? '#fecaca' : isStrongest ? '#bbf7d0' : '#e5e7eb';
-    const scoreColor = isWeakest ? '#dc2626' : isStrongest ? '#16a34a' : '#374151';
+    const bg = isWeakest ? '#fef2f2' : isStrongest ? '#f0f1ff' : '#f9fafb';
+    const border = isWeakest ? '#fecaca' : isStrongest ? '#dce0ff' : '#e5e7eb';
+    const scoreColor = isWeakest ? '#dc2626' : isStrongest ? '#4d65ff' : '#374151';
     const tag = isWeakest
       ? '<div style="font-size:10px;color:#dc2626;font-weight:bold;margin-top:2px;">Weakest</div>'
       : isStrongest
-      ? '<div style="font-size:10px;color:#16a34a;font-weight:bold;margin-top:2px;">Strongest</div>'
+      ? '<div style="font-size:10px;color:#4d65ff;font-weight:bold;margin-top:2px;">Strongest</div>'
       : '';
     return `
       <td style="width:25%;padding:4px;">
@@ -103,7 +103,7 @@ export function buildDiagnosticEmailHtml(data: EmailData): string {
   const actionItems = actions.map((action, i) => `
     <tr>
       <td style="vertical-align:top;padding:6px 8px 6px 0;width:28px;">
-        <div style="width:22px;height:22px;background:#dcfce7;border-radius:50%;text-align:center;line-height:22px;font-size:11px;font-weight:bold;color:#15803d;">${i + 1}</div>
+        <div style="width:22px;height:22px;background:#e5e8ff;border-radius:50%;text-align:center;line-height:22px;font-size:11px;font-weight:bold;color:#3a52e8;">${i + 1}</div>
       </td>
       <td style="font-size:13px;color:#374151;line-height:1.5;padding:6px 0;">${action}</td>
     </tr>`).join('');
@@ -133,7 +133,7 @@ export function buildDiagnosticEmailHtml(data: EmailData): string {
           <!-- Header -->
           <tr>
             <td style="background:#111827;padding:28px 32px 24px;">
-              <div style="font-size:11px;font-weight:bold;color:#4ade80;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Growth Engine Diagnostic</div>
+              <div style="font-size:11px;font-weight:bold;color:#818bff;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Growth Engine Diagnostic</div>
               <div style="font-size:24px;font-weight:bold;color:#ffffff;margin-bottom:4px;">Your Results Are Ready</div>
               <div style="font-size:14px;color:#9ca3af;">Prepared for ${recipientName} · ${recipientCompany}</div>
             </td>
@@ -149,8 +149,8 @@ export function buildDiagnosticEmailHtml(data: EmailData): string {
               </p>
 
               <!-- Profile Card -->
-              <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:18px 20px;margin-bottom:20px;">
-                <div style="font-size:10px;font-weight:bold;color:#16a34a;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Your Growth Profile</div>
+              <div style="background:#eef0ff;border:1px solid #c7d0ff;border-radius:10px;padding:18px 20px;margin-bottom:20px;">
+                <div style="font-size:10px;font-weight:bold;color:#4d65ff;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Your Growth Profile</div>
                 <div style="font-size:18px;font-weight:bold;color:#111827;margin-bottom:8px;">${archetypeName}</div>
                 <p style="font-size:13px;color:#374151;line-height:1.6;margin:0;">${summary}</p>
               </div>
@@ -159,7 +159,7 @@ export function buildDiagnosticEmailHtml(data: EmailData): string {
 
               <!-- Trap Scores -->
               <div style="margin-bottom:24px;">
-                <div style="font-size:14px;font-weight:bold;color:#111827;margin-bottom:4px;border-left:3px solid #16a34a;padding-left:10px;">Growth Trap Profile</div>
+                <div style="font-size:14px;font-weight:bold;color:#111827;margin-bottom:4px;border-left:3px solid #4d65ff;padding-left:10px;">Growth Trap Profile</div>
                 <div style="font-size:11px;color:#6b7280;padding-left:13px;margin-bottom:12px;">Higher score = more evidence of that trap</div>
                 <table width="100%" cellpadding="0" cellspacing="0">
                   ${trapRows}
@@ -168,14 +168,14 @@ export function buildDiagnosticEmailHtml(data: EmailData): string {
 
               <!-- Flow Scores -->
               <div style="margin-bottom:24px;">
-                <div style="font-size:14px;font-weight:bold;color:#111827;margin-bottom:4px;border-left:3px solid #16a34a;padding-left:10px;">Flow Health Scores</div>
+                <div style="font-size:14px;font-weight:bold;color:#111827;margin-bottom:4px;border-left:3px solid #4d65ff;padding-left:10px;">Flow Health Scores</div>
                 <div style="font-size:11px;color:#6b7280;padding-left:13px;margin-bottom:12px;">Higher = more systematic engine</div>
                 <table width="100%" cellpadding="0" cellspacing="0"><tr>${flowBoxes}</tr></table>
               </div>
 
               <!-- Build First -->
-              <div style="background:#f9fafb;border-left:4px solid #16a34a;border-radius:8px;padding:16px 18px;margin-bottom:20px;">
-                <div style="font-size:10px;font-weight:bold;color:#16a34a;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Build First</div>
+              <div style="background:#f9fafb;border-left:4px solid #4d65ff;border-radius:8px;padding:16px 18px;margin-bottom:20px;">
+                <div style="font-size:10px;font-weight:bold;color:#4d65ff;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Build First</div>
                 <div style="font-size:16px;font-weight:bold;color:#111827;margin-bottom:8px;">${recommendation.title}</div>
                 ${recommendation.items.map((item) =>
                   `<div style="font-size:12px;color:#374151;margin-bottom:4px;">✓ ${item}</div>`
@@ -184,7 +184,7 @@ export function buildDiagnosticEmailHtml(data: EmailData): string {
 
               <!-- 30-Day Actions (top 3) -->
               <div style="margin-bottom:24px;">
-                <div style="font-size:14px;font-weight:bold;color:#111827;margin-bottom:4px;border-left:3px solid #16a34a;padding-left:10px;">Your First 3 Actions This Month</div>
+                <div style="font-size:14px;font-weight:bold;color:#111827;margin-bottom:4px;border-left:3px solid #4d65ff;padding-left:10px;">Your First 3 Actions This Month</div>
                 <div style="font-size:11px;color:#6b7280;padding-left:13px;margin-bottom:12px;">Start building your ${systemLabel.toLowerCase()}</div>
                 <table width="100%" cellpadding="0" cellspacing="0">
                   ${actionItems}
@@ -193,12 +193,12 @@ export function buildDiagnosticEmailHtml(data: EmailData): string {
               </div>
 
               <!-- CTA -->
-              <div style="background:#111827;border-radius:10px;padding:24px;text-align:center;">
-                <div style="font-size:17px;font-weight:bold;color:#ffffff;margin-bottom:6px;">Book a Growth Engine Review</div>
-                <p style="font-size:13px;color:#9ca3af;margin:0 0 16px;line-height:1.5;">
+              <div style="background:#eef0ff;border:1px solid #c7d0ff;border-radius:10px;padding:24px;text-align:center;">
+                <div style="font-size:17px;font-weight:bold;color:#111827;margin-bottom:6px;">Book a Growth Engine Review</div>
+                <p style="font-size:13px;color:#374151;margin:0 0 16px;line-height:1.5;">
                   We&apos;ll walk through your results, identify the real constraint, and show you what system to build first.
                 </p>
-                <a href="${bookCallUrl}" style="display:inline-block;background:#16a34a;color:#ffffff;font-size:14px;font-weight:bold;padding:12px 28px;border-radius:8px;text-decoration:none;">
+                <a href="${bookCallUrl}" style="display:inline-block;background:#4d65ff;color:#ffffff;font-size:14px;font-weight:bold;padding:12px 28px;border-radius:8px;text-decoration:none;">
                   Book a Call
                 </a>
               </div>
