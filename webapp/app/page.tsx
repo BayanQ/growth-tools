@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { QUESTIONS } from '@/lib/questions';
 import { score } from '@/lib/scoring';
 import { ScoringOutput, UserAnswers } from '@/lib/types';
@@ -337,6 +337,7 @@ function QuestionFlow({
   const sectionLabel = SECTION_NAMES[currentSection] ?? currentSection;
 
   function handleSelect(value: number) {
+    if (advancing) return;
     onAnswer(question.id, value);
     setAdvancing(true);
     setTimeout(() => {
@@ -371,87 +372,89 @@ function QuestionFlow({
         </div>
       </header>
 
-      <main className="flex-1 px-6 py-10 max-w-2xl mx-auto w-full flex flex-col">
-        <ProgressBar current={currentIndex + 1} total={total} />
+      <main className="flex-1 flex flex-col items-center px-4 sm:px-6 py-6">
+        {/* Content block — my-auto centres it vertically on desktop */}
+        <div className="my-auto w-full max-w-xl">
+          <ProgressBar current={currentIndex + 1} total={total} />
 
-        {/* Section label */}
-        <div className="mb-6">
-          <span className="inline-flex items-center rounded-full border border-brand-border bg-brand-surface px-3 py-1 text-xs font-semibold text-brand-muted uppercase tracking-wide">
-            Section {SECTIONS_ORDER.indexOf(currentSection) + 1} of {SECTIONS_ORDER.length} — {sectionLabel}
-          </span>
-        </div>
-
-        {/* Question */}
-        <div className="card flex-1 flex flex-col">
-          <p className="text-lg font-semibold text-brand-text leading-relaxed mb-8">
-            {question.text}
-          </p>
-
-          {/* Scale */}
-          <div className="space-y-3 mb-8">
-            <div className="flex justify-between text-xs text-brand-subtle px-1 mb-1">
-              <span>Strongly disagree</span>
-              <span>Strongly agree</span>
-            </div>
-            <div className="flex justify-center gap-3">
-              {[1, 2, 3, 4, 5].map((v) => (
-                <button
-                  key={v}
-                  onClick={() => handleSelect(v)}
-                  className={`scale-btn ${
-                    currentAnswer === v ? 'scale-btn-active' : 'scale-btn-inactive'
-                  }`}
-                  title={scaleLabels[v - 1]}
-                >
-                  {v}
-                </button>
-              ))}
-            </div>
-            {currentAnswer && (
-              <p className="text-center text-sm text-brand-muted mt-1">
-                {scaleLabels[currentAnswer - 1]}
-              </p>
-            )}
+          {/* Section label */}
+          <div className="mb-4">
+            <span className="inline-flex items-center rounded-full border border-brand-border bg-brand-surface px-3 py-1 text-xs font-semibold text-brand-muted uppercase tracking-wide">
+              Section {SECTIONS_ORDER.indexOf(currentSection) + 1} of {SECTIONS_ORDER.length} — {sectionLabel}
+            </span>
           </div>
 
-          {/* Navigation */}
-          <div className="flex justify-between items-center mt-auto pt-4 border-t border-brand-border">
-            <button
-              onClick={handlePrev}
-              disabled={currentIndex === 0}
-              className="text-sm text-brand-muted hover:text-brand-text disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-            >
-              ← Previous
-            </button>
-
-            <p className={`text-xs text-brand-subtle transition-opacity ${advancing ? 'opacity-100' : 'opacity-0'}`}>
-              {isLast ? 'Calculating results…' : 'Next question…'}
+          {/* Question card — natural height, no flex-1 stretch */}
+          <div className="card">
+            <p className="text-base sm:text-lg font-semibold text-brand-text leading-relaxed mb-6">
+              {question.text}
             </p>
-          </div>
-        </div>
 
-        {/* Section navigation dots */}
-        <div className="flex justify-center gap-2 mt-6">
-          {SECTIONS_ORDER.map((sec) => {
-            const secQuestions = QUESTIONS.filter((q) => q.section === sec);
-            const secAnswered = secQuestions.filter((q) => answers[q.id]).length;
-            const isActive = sec === currentSection;
-            const isComplete = secAnswered === secQuestions.length;
-            return (
-              <div
-                key={sec}
-                className={`h-1.5 rounded-full transition-all ${
-                  isActive
-                    ? 'w-8 bg-brand-accent'
-                    : isComplete
-                    ? 'w-4 bg-brand-accent/40'
-                    : 'w-4 bg-brand-border'
-                }`}
+            {/* Scale */}
+            <div className="space-y-3 mb-6">
+              <div className="flex justify-between text-xs text-brand-subtle px-1 mb-1">
+                <span>Strongly disagree</span>
+                <span>Strongly agree</span>
+              </div>
+              <div className="flex justify-center gap-2 sm:gap-3">
+                {[1, 2, 3, 4, 5].map((v) => (
+                  <button
+                    key={v}
+                    onClick={() => handleSelect(v)}
+                    disabled={advancing}
+                    className={`scale-btn ${
+                      currentAnswer === v ? 'scale-btn-active' : 'scale-btn-inactive'
+                    } ${advancing ? 'cursor-not-allowed' : ''}`}
+                    title={scaleLabels[v - 1]}
+                  >
+                    {v}
+                  </button>
+                ))}
+              </div>
+              <p className={`text-center text-sm text-brand-muted mt-1 transition-opacity ${currentAnswer ? 'opacity-100' : 'opacity-0'}`}>
+                {currentAnswer ? scaleLabels[currentAnswer - 1] : '—'}
+              </p>
+            </div>
+
+            {/* Navigation — Previous left, status indicator right */}
+            <div className="flex justify-between items-center pt-4 border-t border-brand-border">
+              <button
+                onClick={handlePrev}
+                disabled={currentIndex === 0}
+                className="text-sm text-brand-muted hover:text-brand-text disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              >
+                ← Previous
+              </button>
+
+              <p className={`text-xs text-brand-subtle transition-opacity ${advancing ? 'opacity-100' : 'opacity-0'}`}>
+                {isLast ? 'Calculating results…' : 'Next question…'}
+              </p>
+            </div>
+          </div>
+
+          {/* Section navigation dots */}
+          <div className="flex justify-center gap-2 mt-5">
+            {SECTIONS_ORDER.map((sec) => {
+              const secQuestions = QUESTIONS.filter((q) => q.section === sec);
+              const secAnswered = secQuestions.filter((q) => answers[q.id]).length;
+              const isActive = sec === currentSection;
+              const isComplete = secAnswered === secQuestions.length;
+              return (
+                <div
+                  key={sec}
+                  className={`h-1.5 rounded-full transition-all ${
+                    isActive
+                      ? 'w-8 bg-brand-accent'
+                      : isComplete
+                      ? 'w-4 bg-brand-accent/40'
+                      : 'w-4 bg-brand-border'
+                  }`}
                 title={SECTION_NAMES[sec]}
               />
             );
           })}
-        </div>
+          </div>
+        </div>{/* end my-auto wrapper */}
       </main>
     </div>
   );
@@ -833,6 +836,7 @@ export default function App() {
   const [state, setState] = useState<AppState>('landing');
   const [intake, setIntake] = useState<IntakeData | null>(null);
   const [answers, setAnswers] = useState<UserAnswers>({});
+  const answersRef = useRef<UserAnswers>({});
   const [output, setOutput] = useState<ScoringOutput | null>(null);
   const [leadSubmitted, setLeadSubmitted] = useState(false);
 
@@ -842,13 +846,14 @@ export default function App() {
   }
 
   function handleAnswer(id: number, value: number) {
-    setAnswers((a) => ({ ...a, [id]: value }));
+    answersRef.current = { ...answersRef.current, [id]: value };
+    setAnswers(answersRef.current);
   }
 
   function handleQuestionsComplete() {
     setState('loading');
     setTimeout(() => {
-      const result = score(answers);
+      const result = score(answersRef.current);
       setOutput(result);
       setState('results');
     }, 1800);
