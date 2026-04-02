@@ -40,20 +40,20 @@ export function TrapBarChart({ trapScores, primaryTrap }: Props) {
           layout="vertical"
           margin={{ top: 4, right: 24, left: 8, bottom: 4 }}
         >
-          <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#2a2a2a" />
+          <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e5e7eb" />
           <XAxis
             type="number"
             domain={[0, 100]}
             tickCount={6}
-            tick={{ fontSize: 11, fill: '#525252' }}
-            axisLine={{ stroke: '#2a2a2a' }}
-            tickLine={{ stroke: '#2a2a2a' }}
+            tick={{ fontSize: 11, fill: '#6b7280' }}
+            axisLine={{ stroke: '#e5e7eb' }}
+            tickLine={{ stroke: '#e5e7eb' }}
           />
           <YAxis
             type="category"
             dataKey="name"
             width={170}
-            tick={{ fontSize: 12, fill: '#a3a3a3' }}
+            tick={{ fontSize: 12, fill: '#374151' }}
             axisLine={false}
             tickLine={false}
           />
@@ -61,9 +61,9 @@ export function TrapBarChart({ trapScores, primaryTrap }: Props) {
             formatter={(value: number) => [`${value}/100`, 'Trap Score']}
             contentStyle={{
               borderRadius: '8px',
-              border: '1px solid #2a2a2a',
-              backgroundColor: '#1d1d1d',
-              color: '#f5f5f5',
+              border: '1px solid #e5e7eb',
+              backgroundColor: '#ffffff',
+              color: '#111111',
               fontSize: '13px',
             }}
           />

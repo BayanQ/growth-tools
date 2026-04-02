@@ -326,28 +326,34 @@ function QuestionFlow({
   onComplete: () => void;
 }) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [advancing, setAdvancing] = useState(false);
   const question = QUESTIONS[currentIndex];
   const total = QUESTIONS.length;
   const answeredCount = Object.keys(answers).length;
   const currentAnswer = answers[question.id];
+  const isLast = currentIndex === total - 1;
 
   const currentSection = question.section;
   const sectionLabel = SECTION_NAMES[currentSection] ?? currentSection;
 
   function handleSelect(value: number) {
     onAnswer(question.id, value);
-  }
-
-  function handleNext() {
-    if (currentIndex < total - 1) {
-      setCurrentIndex((i) => i + 1);
-    } else {
-      onComplete();
-    }
+    setAdvancing(true);
+    setTimeout(() => {
+      setAdvancing(false);
+      if (currentIndex < total - 1) {
+        setCurrentIndex((i) => i + 1);
+      } else {
+        onComplete();
+      }
+    }, 400);
   }
 
   function handlePrev() {
-    if (currentIndex > 0) setCurrentIndex((i) => i - 1);
+    if (currentIndex > 0) {
+      setAdvancing(false);
+      setCurrentIndex((i) => i - 1);
+    }
   }
 
   const scaleLabels = ['Strongly disagree', 'Disagree', 'Neutral / mixed', 'Agree', 'Strongly agree'];
@@ -418,13 +424,9 @@ function QuestionFlow({
               ← Previous
             </button>
 
-            <button
-              onClick={handleNext}
-              disabled={!currentAnswer}
-              className="btn-primary disabled:opacity-40"
-            >
-              {currentIndex === total - 1 ? 'See Results →' : 'Next →'}
-            </button>
+            <p className={`text-xs text-brand-subtle transition-opacity ${advancing ? 'opacity-100' : 'opacity-0'}`}>
+              {isLast ? 'Calculating results…' : 'Next question…'}
+            </p>
           </div>
         </div>
 
@@ -541,7 +543,7 @@ function ResultsPage({
 
       <main className="max-w-3xl mx-auto px-6 py-10 space-y-6">
         {/* Archetype + Summary */}
-        <div className="card border-brand-accent/30" style={{ backgroundColor: '#1a2200' }}>
+        <div className="card border-brand-accent/30 bg-[#eef0ff]">
           <div className="flex items-start gap-4">
             <div className="flex-1">
               <p className="text-xs font-semibold text-brand-accent uppercase tracking-wide mb-1">
@@ -562,9 +564,9 @@ function ResultsPage({
         {warning && (
           <div className="card border-yellow-500/30 bg-yellow-500/5">
             <div className="flex gap-3">
-              <span className="text-yellow-400 text-lg">⚠</span>
+              <span className="text-yellow-600 text-lg">⚠</span>
               <div>
-                <p className="text-sm font-semibold text-yellow-300 mb-1">Over-fueling warning</p>
+                <p className="text-sm font-semibold text-yellow-700 mb-1">Over-fueling warning</p>
                 <p className="text-sm text-brand-muted">{warning}</p>
               </div>
             </div>
@@ -580,12 +582,12 @@ function ResultsPage({
           <TrapBarChart trapScores={trap_scores} primaryTrap={primary_trap} />
           <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="rounded-lg border border-red-500/20 bg-red-500/5 p-3">
-              <p className="text-xs font-semibold text-red-400 uppercase tracking-wide mb-0.5">Primary Trap</p>
+              <p className="text-xs font-semibold text-red-600 uppercase tracking-wide mb-0.5">Primary Trap</p>
               <p className="font-semibold text-brand-text">{TRAP_LABELS[primary_trap]}</p>
               <p className="text-xs text-brand-muted mt-1 leading-relaxed line-clamp-2">{TRAP_DESCRIPTIONS[primary_trap].split('.')[0]}.</p>
             </div>
             <div className="rounded-lg border border-orange-500/20 bg-orange-500/5 p-3">
-              <p className="text-xs font-semibold text-orange-400 uppercase tracking-wide mb-0.5">Secondary Trap</p>
+              <p className="text-xs font-semibold text-orange-600 uppercase tracking-wide mb-0.5">Secondary Trap</p>
               <p className="font-semibold text-brand-text">{TRAP_LABELS[secondary_trap]}</p>
             </div>
           </div>
@@ -612,11 +614,11 @@ function ResultsPage({
               >
                 <p className="text-xs text-brand-subtle mb-1">{FLOW_LABELS[flow]}</p>
                 <p className={`text-xl font-bold ${
-                  flow === weakest_flow ? 'text-red-400' : flow === strongest_flow ? 'text-brand-accent' : 'text-brand-muted'
+                  flow === weakest_flow ? 'text-red-600' : flow === strongest_flow ? 'text-brand-accent' : 'text-brand-muted'
                 }`}>
                   {flow_scores[flow]}
                 </p>
-                {flow === weakest_flow && <p className="text-xs text-red-400 mt-0.5">Weakest</p>}
+                {flow === weakest_flow && <p className="text-xs text-red-600 mt-0.5">Weakest</p>}
                 {flow === strongest_flow && <p className="text-xs text-brand-accent mt-0.5">Strongest</p>}
               </div>
             ))}
@@ -672,7 +674,7 @@ function ResultsPage({
         </div>
 
         {/* Book a Call CTA */}
-        <div className="card border-brand-accent/20 text-center" style={{ backgroundColor: '#1a2200' }}>
+        <div className="card border-brand-accent/20 text-center bg-[#eef0ff]">
           <h3 className="text-xl font-bold text-brand-text mb-2">Book a Growth Engine Review</h3>
           <p className="text-brand-muted text-sm mb-6 max-w-md mx-auto">
             We&apos;ll walk through your results, identify the real constraint, and show you what system to build first.
