@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { output, lead, bookCallUrl = process.env.BOOK_CALL_URL ?? '#' } = body;
+  const { output, lead, bookCallUrl = process.env.BOOK_CALL_URL ?? 'https://calendly.com/adam-liederman/30-min-w-adam' } = body;
 
   // Generate PDF
   const pdfElement = React.createElement(GrowthEngineDiagnosticPDF, {

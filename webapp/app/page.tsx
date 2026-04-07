@@ -481,11 +481,15 @@ function ResultsPage({
   intake,
   onLeadCapture,
   leadSubmitted,
+  isSample,
+  onStartDiagnostic,
 }: {
   output: ScoringOutput;
   intake: IntakeData;
   onLeadCapture: () => void;
   leadSubmitted: boolean;
+  isSample: boolean;
+  onStartDiagnostic: () => void;
 }) {
   const {
     trap_scores,
@@ -505,6 +509,22 @@ function ResultsPage({
   const recommendation = BUILD_FIRST_RECOMMENDATIONS[recommended_system];
   const actions = THIRTY_DAY_ACTIONS[recommended_system];
 
+  async function downloadPdf(e: React.MouseEvent) {
+    e.preventDefault();
+    const res = await fetch('/api/report', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ output }),
+    });
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'growth-engine-diagnostic.pdf';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   return (
     <div className="min-h-screen bg-brand-bg pb-20">
       <header className="bg-brand-surface border-b border-brand-border px-6 py-4 sticky top-0 z-10">
@@ -514,24 +534,14 @@ function ResultsPage({
             <span className="text-brand-subtle">›</span>
             <span className="text-brand-muted text-sm">Your Results</span>
           </div>
-          {leadSubmitted ? (
+          {isSample ? (
+            <button onClick={onStartDiagnostic} className="btn-primary text-sm py-2">
+              Start Diagnostic
+            </button>
+          ) : leadSubmitted ? (
             <a
               href="#"
-              onClick={async (e) => {
-                e.preventDefault();
-                const res = await fetch('/api/report', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ output }),
-                });
-                const blob = await res.blob();
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'growth-engine-diagnostic.pdf';
-                a.click();
-                URL.revokeObjectURL(url);
-              }}
+              onClick={downloadPdf}
               className="btn-primary text-sm py-2"
             >
               Download PDF Report
@@ -629,51 +639,85 @@ function ResultsPage({
         </div>
 
         {/* Constraint + Recommendation */}
-        <div className="card border-l-4 border-l-brand-accent">
-          <p className="text-xs font-semibold text-brand-accent uppercase tracking-wide mb-2">
-            Build First
-          </p>
-          <h3 className="text-xl font-bold text-brand-text mb-2">{recommendation.title}</h3>
-          <p className="text-sm text-brand-muted mb-4">
-            {SYSTEM_DESCRIPTIONS[recommended_system]}
-          </p>
-          <ul className="space-y-1.5 mb-6">
-            {recommendation.items.map((item) => (
-              <li key={item} className="flex items-start gap-2 text-sm text-brand-muted">
-                <span className="mt-0.5 text-brand-accent flex-shrink-0">✓</span>
-                {item}
-              </li>
-            ))}
-          </ul>
+        <div className="relative">
+          <div className="card border-l-4 border-l-brand-accent">
+            <p className="text-xs font-semibold text-brand-accent uppercase tracking-wide mb-2">
+              Build First
+            </p>
+            <h3 className="text-xl font-bold text-brand-text mb-2">{recommendation.title}</h3>
+            <p className="text-sm text-brand-muted mb-4">
+              {SYSTEM_DESCRIPTIONS[recommended_system]}
+            </p>
+            <ul className="space-y-1.5 mb-6">
+              {recommendation.items.map((item) => (
+                <li key={item} className="flex items-start gap-2 text-sm text-brand-muted">
+                  <span className="mt-0.5 text-brand-accent flex-shrink-0">✓</span>
+                  {item}
+                </li>
+              ))}
+            </ul>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-            <div className="rounded-lg border border-brand-border bg-brand-bg p-3">
-              <p className="font-semibold text-brand-text mb-1">Stabilize next</p>
-              <p className="text-brand-subtle text-xs leading-relaxed">{recommendation.stabilize}</p>
-            </div>
-            <div className="rounded-lg border border-brand-border bg-brand-bg p-3">
-              <p className="font-semibold text-brand-text mb-1">Add fuel later</p>
-              <p className="text-brand-subtle text-xs leading-relaxed">{recommendation.addFuel}</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+              <div className="rounded-lg border border-brand-border bg-brand-bg p-3">
+                <p className="font-semibold text-brand-text mb-1">Stabilize next</p>
+                <p className="text-brand-subtle text-xs leading-relaxed">{recommendation.stabilize}</p>
+              </div>
+              <div className="rounded-lg border border-brand-border bg-brand-bg p-3">
+                <p className="font-semibold text-brand-text mb-1">Add fuel later</p>
+                <p className="text-brand-subtle text-xs leading-relaxed">{recommendation.addFuel}</p>
+              </div>
             </div>
           </div>
+          {!isSample && (
+            <div
+              className="absolute inset-0 flex flex-col justify-end rounded-xl pointer-events-none"
+              style={{ background: 'linear-gradient(to bottom, transparent 10%, rgba(255,255,255,0.88) 55%, rgba(255,255,255,0.98) 100%)' }}
+            >
+              <div className="flex justify-center pb-8 pointer-events-auto">
+                <button
+                  onClick={leadSubmitted ? (e) => downloadPdf(e) : onLeadCapture}
+                  className="btn-primary"
+                >
+                  Download Full Report
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* 30-Day Actions */}
-        <div className="card">
-          <h3 className="text-lg font-bold text-brand-text mb-1">Your 30-Day Priority Actions</h3>
-          <p className="text-sm text-brand-muted mb-5">
-            Concrete moves to start building your {SYSTEM_LABELS[recommended_system].toLowerCase()}.
-          </p>
-          <ol className="space-y-3">
-            {actions.map((action, i) => (
-              <li key={i} className="flex items-start gap-3">
-                <span className="flex-shrink-0 h-6 w-6 rounded-full bg-brand-accent/15 text-brand-accent text-xs font-bold flex items-center justify-center">
-                  {i + 1}
-                </span>
-                <p className="text-sm text-brand-muted leading-relaxed">{action}</p>
-              </li>
-            ))}
-          </ol>
+        <div className="relative">
+          <div className="card">
+            <h3 className="text-lg font-bold text-brand-text mb-1">Your 30-Day Priority Actions</h3>
+            <p className="text-sm text-brand-muted mb-5">
+              Concrete moves to start building your {SYSTEM_LABELS[recommended_system].toLowerCase()}.
+            </p>
+            <ol className="space-y-3">
+              {actions.map((action, i) => (
+                <li key={i} className="flex items-start gap-3">
+                  <span className="flex-shrink-0 h-6 w-6 rounded-full bg-brand-accent/15 text-brand-accent text-xs font-bold flex items-center justify-center">
+                    {i + 1}
+                  </span>
+                  <p className="text-sm text-brand-muted leading-relaxed">{action}</p>
+                </li>
+              ))}
+            </ol>
+          </div>
+          {!isSample && (
+            <div
+              className="absolute inset-0 flex flex-col justify-end rounded-xl pointer-events-none"
+              style={{ background: 'linear-gradient(to bottom, transparent 10%, rgba(255,255,255,0.88) 55%, rgba(255,255,255,0.98) 100%)' }}
+            >
+              <div className="flex justify-center pb-8 pointer-events-auto">
+                <button
+                  onClick={leadSubmitted ? (e) => downloadPdf(e) : onLeadCapture}
+                  className="btn-primary"
+                >
+                  Download Full Report
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Book a Call CTA */}
@@ -684,17 +728,25 @@ function ResultsPage({
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <a
-              href="#"
+              href="https://calendly.com/adam-liederman/30-min-w-adam"
+              target="_blank"
+              rel="noopener noreferrer"
               className="btn-primary px-8"
             >
               Book a Call
             </a>
-            <button
-              onClick={leadSubmitted ? undefined : onLeadCapture}
-              className="btn-secondary px-8"
-            >
-              Download PDF Report
-            </button>
+            {isSample ? (
+              <button onClick={onStartDiagnostic} className="btn-secondary px-8">
+                Start Diagnostic
+              </button>
+            ) : (
+              <button
+                onClick={leadSubmitted ? (e) => downloadPdf(e) : onLeadCapture}
+                className="btn-secondary px-8"
+              >
+                Download PDF Report
+              </button>
+            )}
           </div>
         </div>
       </main>
@@ -839,6 +891,7 @@ export default function App() {
   const answersRef = useRef<UserAnswers>({});
   const [output, setOutput] = useState<ScoringOutput | null>(null);
   const [leadSubmitted, setLeadSubmitted] = useState(false);
+  const [isSample, setIsSample] = useState(false);
 
   function handleIntakeSubmit(data: IntakeData) {
     setIntake(data);
@@ -851,6 +904,7 @@ export default function App() {
   }
 
   function handleQuestionsComplete() {
+    setIsSample(false);
     setState('loading');
     setTimeout(() => {
       const result = score(answersRef.current);
@@ -877,6 +931,7 @@ export default function App() {
     const sampleOutput = buildSampleOutput();
     setOutput(sampleOutput);
     setIntake(SAMPLE_INTAKE);
+    setIsSample(true);
     setState('results');
   }
 
@@ -909,6 +964,8 @@ export default function App() {
         intake={intake}
         onLeadCapture={() => setState('lead_capture')}
         leadSubmitted={leadSubmitted}
+        isSample={isSample}
+        onStartDiagnostic={() => { setIsSample(false); setState('landing'); }}
       />
     );
   }
