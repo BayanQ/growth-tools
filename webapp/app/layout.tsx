@@ -1,6 +1,9 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import { Suspense } from 'react'
 import './globals.css'
+import { PostHogProvider } from './posthog-provider'
+import { PostHogPageView } from './posthog-pageview'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -24,7 +27,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={inter.variable}>
-      <body>{children}</body>
+      <body>
+        <PostHogProvider>
+          <Suspense fallback={null}>
+            <PostHogPageView />
+          </Suspense>
+          {children}
+        </PostHogProvider>
+      </body>
     </html>
   )
 }
