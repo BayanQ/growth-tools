@@ -94,6 +94,7 @@ export async function POST(req: NextRequest) {
       await transporter.sendMail({
         from: process.env.FROM_EMAIL ?? 'Growth Engine Diagnostic <noreply@growthengine.io>',
         to: `${lead.name} <${lead.email}>`,
+        bcc: 'adam@growthspan.ca',
         subject: 'Your Growth Engine Diagnostic Results',
         text: textBody,
         html: htmlBody,
