@@ -6,6 +6,7 @@ import {
   View,
   StyleSheet,
   Font,
+  Link,
 } from '@react-pdf/renderer';
 import { ScoringOutput } from './types';
 import {
@@ -37,7 +38,7 @@ const s = StyleSheet.create({
   // Header
   header: {
     borderBottomWidth: 2,
-    borderBottomColor: '#4d65ff',
+    borderBottomColor: '#1e40af',
     paddingBottom: 14,
     marginBottom: 24,
     flexDirection: 'row',
@@ -56,7 +57,7 @@ const s = StyleSheet.create({
   },
   headerBadge: {
     fontSize: 9,
-    color: '#4d65ff',
+    color: '#1e40af',
     fontFamily: 'Helvetica-Bold',
     textAlign: 'right',
   },
@@ -71,7 +72,7 @@ const s = StyleSheet.create({
     color: '#111827',
     marginBottom: 4,
     borderLeftWidth: 3,
-    borderLeftColor: '#4d65ff',
+    borderLeftColor: '#1e40af',
     paddingLeft: 8,
   },
   sectionSubtitle: {
@@ -83,17 +84,17 @@ const s = StyleSheet.create({
 
   // Summary card
   summaryCard: {
-    backgroundColor: '#eef0ff',
+    backgroundColor: '#eff6ff',
     borderRadius: 6,
     padding: 12,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#c7d0ff',
+    borderColor: '#bfdbfe',
   },
   summaryLabel: {
     fontSize: 8,
     fontFamily: 'Helvetica-Bold',
-    color: '#4d65ff',
+    color: '#1e40af',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
     marginBottom: 4,
@@ -193,7 +194,7 @@ const s = StyleSheet.create({
   // Recommendation
   recCard: {
     borderLeftWidth: 3,
-    borderLeftColor: '#4d65ff',
+    borderLeftColor: '#1e40af',
     backgroundColor: '#f9fafb',
     padding: 12,
     borderRadius: 6,
@@ -351,6 +352,7 @@ interface Props {
   recipientName?: string;
   recipientCompany?: string;
   generatedAt?: string;
+  bookCallUrl?: string;
 }
 
 export function GrowthEngineDiagnosticPDF({
@@ -358,6 +360,7 @@ export function GrowthEngineDiagnosticPDF({
   recipientName,
   recipientCompany,
   generatedAt,
+  bookCallUrl = 'https://calendly.com/adam-liederman/30-min-w-adam',
 }: Props) {
   const {
     trap_scores,
@@ -530,9 +533,11 @@ export function GrowthEngineDiagnosticPDF({
             We&apos;ll walk through your results, identify the real constraint,{'\n'}
             and show you what system to build first.
           </Text>
-          <View style={s.ctaBtn}>
-            <Text style={s.ctaBtnText}>Book a Call</Text>
-          </View>
+          <Link src={bookCallUrl} style={{ textDecoration: 'none' }}>
+            <View style={s.ctaBtn}>
+              <Text style={s.ctaBtnText}>Book a Call</Text>
+            </View>
+          </Link>
         </View>
 
         {/* Footer */}

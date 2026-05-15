@@ -57,6 +57,7 @@ export async function POST(req: NextRequest) {
       month: 'long',
       day: 'numeric',
     }),
+    bookCallUrl,
   });
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const pdfBuffer = await renderToBuffer(pdfElement as any);
