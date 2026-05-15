@@ -18,6 +18,12 @@ import {
 } from '@/lib/content';
 import { TrapBarChart } from '@/components/TrapBarChart';
 import { FlowRadarChart } from '@/components/FlowRadarChart';
+import {
+  TRAP_BENCHMARKS,
+  FLOW_BENCHMARKS,
+  trapPosition,
+  flowPosition,
+} from '@/lib/benchmarks';
 
 // ── Types ─────────────────────────────────────────────────────────────────
 
@@ -474,6 +480,136 @@ function LoadingScreen() {
   );
 }
 
+// ── Benchmark Comparison ──────────────────────────────────────────────────
+
+/**
+ * Renders a single horizontal comparison bar.
+ * Shows the benchmark range (p25–p75) as a shaded band and the user's
+ * score as a filled dot, all on a 0–100 scale.
+ */
+function BenchmarkBar({
+  score,
+  p25,
+  p50,
+  p75,
+}: {
+  score: number;
+  p25: number;
+  p50: number;
+  p75: number;
+}) {
+  const clamp = (v: number) => Math.max(0, Math.min(100, v));
+  const pct = (v: number) => `${clamp(v)}%`;
+
+  return (
+    <div className="relative h-2 w-full rounded-full bg-brand-border overflow-visible">
+      {/* Peer range band (p25 → p75) */}
+      <div
+        className="absolute top-0 h-full rounded-full bg-brand-accent/20"
+        style={{ left: pct(p25), width: pct(p75 - p25) }}
+      />
+      {/* Peer median tick */}
+      <div
+        className="absolute top-[-2px] h-[calc(100%+4px)] w-[2px] bg-brand-accent/50 rounded-full"
+        style={{ left: pct(p50) }}
+      />
+      {/* User score dot */}
+      <div
+        className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 h-3.5 w-3.5 rounded-full border-2 border-white bg-brand-accent shadow-sm ring-1 ring-brand-accent/30"
+        style={{ left: pct(score) }}
+      />
+    </div>
+  );
+}
+
+function BenchmarkComparison({
+  trap_scores,
+  flow_scores,
+}: {
+  trap_scores: import('@/lib/types').TrapScores;
+  flow_scores: import('@/lib/types').FlowScores;
+}) {
+  const TRAP_ORDER: import('@/lib/types').Trap[] = [
+    'growth_by_addition',
+    'key_person_reliance',
+    'acquisition_over_expansion',
+    'activity_confusion',
+  ];
+  const FLOW_ORDER: import('@/lib/types').Flow[] = ['demand', 'sales', 'delivery', 'expansion'];
+
+  const trapBadge = (pos: ReturnType<typeof trapPosition>) => {
+    switch (pos) {
+      case 'better':  return <span className="text-xs font-medium text-emerald-600 bg-emerald-50 border border-emerald-200 rounded-full px-2 py-0.5">Better than most</span>;
+      case 'watch':   return <span className="text-xs font-medium text-red-600 bg-red-50 border border-red-200 rounded-full px-2 py-0.5">Watch this</span>;
+      default:        return <span className="text-xs font-medium text-brand-muted bg-brand-bg border border-brand-border rounded-full px-2 py-0.5">Typical</span>;
+    }
+  };
+
+  const flowBadge = (pos: ReturnType<typeof flowPosition>) => {
+    switch (pos) {
+      case 'stronger': return <span className="text-xs font-medium text-brand-accent bg-brand-accent/10 border border-brand-accent/20 rounded-full px-2 py-0.5">Stronger</span>;
+      case 'weaker':   return <span className="text-xs font-medium text-red-600 bg-red-50 border border-red-200 rounded-full px-2 py-0.5">Weaker</span>;
+      default:         return <span className="text-xs font-medium text-brand-muted bg-brand-bg border border-brand-border rounded-full px-2 py-0.5">Typical</span>;
+    }
+  };
+
+  return (
+    <div className="card">
+      <div className="flex items-start justify-between mb-1">
+        <h3 className="text-lg font-bold text-brand-text">How You Compare</h3>
+      </div>
+      <p className="text-sm text-brand-muted mb-5">
+        Benchmarked against similar service businesses (10–200 employees).{' '}
+        <span className="text-brand-subtle">Shaded band = typical range · dot = you · line = peer median.</span>
+      </p>
+
+      {/* Trap scores comparison */}
+      <p className="text-xs font-semibold text-brand-subtle uppercase tracking-wide mb-3">Growth Traps <span className="normal-case font-normal">(lower is better)</span></p>
+      <div className="space-y-4 mb-6">
+        {TRAP_ORDER.map((trap) => {
+          const bench = TRAP_BENCHMARKS[trap];
+          const score = trap_scores[trap];
+          const pos = trapPosition(score, bench);
+          return (
+            <div key={trap}>
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-sm text-brand-muted">{TRAP_LABELS[trap]}</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-semibold text-brand-text tabular-nums">{score}</span>
+                  {trapBadge(pos)}
+                </div>
+              </div>
+              <BenchmarkBar score={score} p25={bench.p25} p50={bench.p50} p75={bench.p75} />
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Flow scores comparison */}
+      <p className="text-xs font-semibold text-brand-subtle uppercase tracking-wide mb-3">Flow Health <span className="normal-case font-normal">(higher is better)</span></p>
+      <div className="space-y-4">
+        {FLOW_ORDER.map((flow) => {
+          const bench = FLOW_BENCHMARKS[flow];
+          const score = flow_scores[flow];
+          const pos = flowPosition(score, bench);
+          return (
+            <div key={flow}>
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-sm text-brand-muted">{FLOW_LABELS[flow]}</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-semibold text-brand-text tabular-nums">{score}</span>
+                  {flowBadge(pos)}
+                </div>
+              </div>
+              <BenchmarkBar score={score} p25={bench.p25} p50={bench.p50} p75={bench.p75} />
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 // ── Results Page ─────────────────────────────────────────────────────────
 
 function ResultsPage({
@@ -637,6 +773,9 @@ function ResultsPage({
             ))}
           </div>
         </div>
+
+        {/* Benchmark Comparison */}
+        <BenchmarkComparison trap_scores={trap_scores} flow_scores={flow_scores} />
 
         {/* Constraint + Recommendation */}
         <div className="relative">
