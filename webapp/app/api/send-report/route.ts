@@ -4,6 +4,7 @@ import { renderToBuffer } from '@react-pdf/renderer';
 import { GrowthEngineDiagnosticPDF } from '@/lib/pdf-template';
 import { buildDiagnosticEmailHtml, buildDiagnosticEmailText } from '@/lib/email-template';
 import { ScoringOutput } from '@/lib/types';
+import { storeLead } from '@/lib/lead-store';
 
 /**
  * POST /api/send-report
@@ -46,6 +47,9 @@ export async function POST(req: NextRequest) {
   }
 
   const { output, lead, bookCallUrl = process.env.BOOK_CALL_URL ?? 'https://calendly.com/adam-liederman/30-min-w-adam' } = body;
+
+  // Store lead — non-blocking, failure does not prevent email/PDF delivery
+  storeLead(lead, output).catch(() => undefined);
 
   // Generate PDF
   const pdfElement = React.createElement(GrowthEngineDiagnosticPDF, {
