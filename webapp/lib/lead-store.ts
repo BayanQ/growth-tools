@@ -45,12 +45,16 @@ export async function storeLead(
 }
 
 export async function getAllLeads(): Promise<StoredLead[]> {
-  const store = getStore('leads');
-  const { blobs } = await store.list();
-  const leads = await Promise.all(
-    blobs.map(({ key }) => store.get(key, { type: 'json' }) as Promise<StoredLead>)
-  );
-  return leads
-    .filter(Boolean)
-    .sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime());
+  try {
+    const store = getStore('leads');
+    const { blobs } = await store.list();
+    const leads = await Promise.all(
+      blobs.map(({ key }) => store.get(key, { type: 'json' }) as Promise<StoredLead>)
+    );
+    return leads
+      .filter(Boolean)
+      .sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime());
+  } catch {
+    return [];
+  }
 }
