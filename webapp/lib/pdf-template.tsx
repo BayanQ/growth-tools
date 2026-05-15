@@ -37,7 +37,7 @@ const s = StyleSheet.create({
   // Header
   header: {
     borderBottomWidth: 2,
-    borderBottomColor: '#4d65ff',
+    borderBottomColor: '#1e40af',
     paddingBottom: 14,
     marginBottom: 24,
     flexDirection: 'row',
@@ -56,7 +56,7 @@ const s = StyleSheet.create({
   },
   headerBadge: {
     fontSize: 9,
-    color: '#4d65ff',
+    color: '#1e40af',
     fontFamily: 'Helvetica-Bold',
     textAlign: 'right',
   },
@@ -71,7 +71,7 @@ const s = StyleSheet.create({
     color: '#111827',
     marginBottom: 4,
     borderLeftWidth: 3,
-    borderLeftColor: '#4d65ff',
+    borderLeftColor: '#1e40af',
     paddingLeft: 8,
   },
   sectionSubtitle: {
@@ -83,17 +83,17 @@ const s = StyleSheet.create({
 
   // Summary card
   summaryCard: {
-    backgroundColor: '#eef0ff',
+    backgroundColor: '#eff6ff',
     borderRadius: 6,
     padding: 12,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#c7d0ff',
+    borderColor: '#bfdbfe',
   },
   summaryLabel: {
     fontSize: 8,
     fontFamily: 'Helvetica-Bold',
-    color: '#4d65ff',
+    color: '#1e40af',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
     marginBottom: 4,
@@ -193,7 +193,7 @@ const s = StyleSheet.create({
   // Recommendation
   recCard: {
     borderLeftWidth: 3,
-    borderLeftColor: '#4d65ff',
+    borderLeftColor: '#1e40af',
     backgroundColor: '#f9fafb',
     padding: 12,
     borderRadius: 6,
@@ -202,7 +202,7 @@ const s = StyleSheet.create({
   recLabel: {
     fontSize: 8,
     fontFamily: 'Helvetica-Bold',
-    color: '#4d65ff',
+    color: '#1e40af',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
     marginBottom: 3,
@@ -226,7 +226,7 @@ const s = StyleSheet.create({
   },
   recCheck: {
     fontSize: 9,
-    color: '#4d65ff',
+    color: '#1e40af',
     width: 10,
   },
   recItemText: {
@@ -270,14 +270,14 @@ const s = StyleSheet.create({
     width: 18,
     height: 18,
     borderRadius: 9,
-    backgroundColor: '#e5e8ff',
+    backgroundColor: '#dbeafe',
     alignItems: 'center',
     justifyContent: 'center',
   },
   actionNumText: {
     fontSize: 8,
     fontFamily: 'Helvetica-Bold',
-    color: '#3a52e8',
+    color: '#1e3a8a',
   },
   actionText: {
     flex: 1,
@@ -289,7 +289,7 @@ const s = StyleSheet.create({
 
   // CTA
   ctaBox: {
-    backgroundColor: '#eef0ff',
+    backgroundColor: '#eff6ff',
     borderRadius: 8,
     padding: 16,
     marginTop: 4,
@@ -309,7 +309,7 @@ const s = StyleSheet.create({
     lineHeight: 1.5,
   },
   ctaBtn: {
-    backgroundColor: '#4d65ff',
+    backgroundColor: '#1e40af',
     borderRadius: 6,
     paddingHorizontal: 20,
     paddingVertical: 7,
@@ -466,15 +466,15 @@ export function GrowthEngineDiagnosticPDF({
               const sc = flow_scores[flow];
               const isWeakest = flow === weakest_flow;
               const isStrongest = flow === strongest_flow;
-              const bg = isWeakest ? '#fef2f2' : isStrongest ? '#f0f1ff' : '#f9fafb';
-              const border = isWeakest ? '#fecaca' : isStrongest ? '#dce0ff' : '#e5e7eb';
-              const scoreColor = isWeakest ? '#dc2626' : isStrongest ? '#4d65ff' : '#374151';
+              const bg = isWeakest ? '#fef2f2' : isStrongest ? '#eff6ff' : '#f9fafb';
+              const border = isWeakest ? '#fecaca' : isStrongest ? '#bfdbfe' : '#e5e7eb';
+              const scoreColor = isWeakest ? '#dc2626' : isStrongest ? '#1e40af' : '#374151';
               return (
                 <View key={flow} style={[s.flowBox, { backgroundColor: bg, borderColor: border }]}>
                   <Text style={s.flowBoxLabel}>{FLOW_LABELS[flow]}</Text>
                   <Text style={[s.flowBoxScore, { color: scoreColor }]}>{sc}</Text>
                   {isWeakest && <Text style={[s.flowBoxTag, { color: '#dc2626' }]}>Weakest</Text>}
-                  {isStrongest && <Text style={[s.flowBoxTag, { color: '#4d65ff' }]}>Strongest</Text>}
+                  {isStrongest && <Text style={[s.flowBoxTag, { color: '#1e40af' }]}>Strongest</Text>}
                 </View>
               );
             })}
